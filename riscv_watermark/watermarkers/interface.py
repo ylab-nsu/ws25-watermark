@@ -23,5 +23,5 @@ class Watermarker(ABC):
     """
 
     @abstractmethod
-    def get_nbits(self, text_data):
+    def get_nbits(self, text_data) -> int:
         pass

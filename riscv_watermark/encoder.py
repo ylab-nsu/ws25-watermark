@@ -1,7 +1,7 @@
 from riscv_watermark.watermarkers.interface import Watermarker
 from .elf import ElfWorker
 from .exceptions import NoSizeException
-
+from itertools import cycle
 
 class Encoder:
     def __init__(self, src_filename: str, methods: list[Watermarker], message: str):
@@ -25,7 +25,8 @@ class Encoder:
         file = ElfWorker(self.src_filename)
         text_data = file.get_section_data(".text", "rb")
         for watermarker in self.methods:
-            new_data = watermarker.encode(text_data, "nosense")
+            c = [i for i, j in zip(cycle('nonsense'), range(watermarker.get_nbits))]
+            new_data = watermarker.encode(text_data, c)
 
         offset = file.text_offset
         size = file.text_size

@@ -3,10 +3,6 @@ Parses watermark methods to use
 """
 
 
-def parse_methods(methods: str):
-    return methods.split(",")
-
-
 def decode_instruction(data, offset):
     instruction = int.from_bytes(data[offset : offset + 2], byteorder="little")
 

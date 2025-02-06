@@ -26,7 +26,7 @@ def main():
         print("Specify method (encode or decode)")
         return
 
-    methods = parse_methods(args.methods)
+    methods = args.methods.split(',')
     methods = [fget_watermarker(x) for x in methods]
     if None in methods:
         print("Unsupported method detected")
