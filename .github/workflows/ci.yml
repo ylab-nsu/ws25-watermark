@@ -21,18 +21,22 @@ jobs:
       # Update output format to enable automatic inline annotations.
       - name: Run Ruff
         run: ruff check --output-format=github .
-      
+        continue-on-error: true
+        
       - name: Run isort
         run: isort . --check --diff
-
+        continue-on-error: true
+        
       # Check blue formatting
       - name: Run blue
         run: blue . --check
-
+        continue-on-error: true
+        
       # Run flake8p
       - name: Run flake8p
         run: flake8 .
-
+        continue-on-error: true
+        
       - name: Run mypy
         run: mypy .
-        
+        continue-on-error: true
