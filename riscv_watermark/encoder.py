@@ -13,8 +13,11 @@ class Encoder:
             watermarker.get_nbits(self.src_filename) for watermarker in self.methods
         ]
 
+    def total_size(self):
+        return sum(self.sizes)
+
     def can_encode(self):
-        return sum(self.sizes) / 8 >= len(self.message.encode("utf-8"))
+        return self.total_size() / 8 >= len(self.message.encode("utf-8"))
 
     def encode(self):
         if not self.can_encode():
