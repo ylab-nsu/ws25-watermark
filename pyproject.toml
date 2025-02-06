@@ -14,6 +14,7 @@ riscv-watermark = "riscv_watermark.main:main"
 [tool.poetry.dependencies]
 python = "^3.13"
 pyelftools = "^0.31"
+capstone = "^5.0.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
