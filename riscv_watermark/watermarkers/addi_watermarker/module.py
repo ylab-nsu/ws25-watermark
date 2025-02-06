@@ -2,11 +2,11 @@ from riscv_watermark.watermarkers.interface import Watermarker
 
 
 class AddiWatermarker(Watermarker):
-    def encode(self, src_filename, message):
+    def encode(self, text_data, message):
         pass
 
-    def decode(self, src_filename):
+    def decode(self, text_data):
         pass
 
-    def get_nbits(self, src_filename):
+    def get_nbits(self, text_data):
         pass

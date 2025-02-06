@@ -13,8 +13,6 @@ def main():
     parser.add_argument('-e', '--encode', type=str, help="Message to encode in binary")
     parser.add_argument('-m', '--methods', type=str, help="Specify methods to use")
     parser.add_argument('-d', '--decode', action='store_true')
-    parser.add_argument('--stack', action='store_true', help="Use stack manipulations in encode/decode")
-    parser.add_argument('--addi', action='store_true', help="Use addi/add replacement in encode/decode")
     parser.add_argument('filename')
     args = parser.parse_args()
 
@@ -28,7 +26,9 @@ def main():
     if None in methods:
         print("Unsupported method detected")
     if args.encode:
-        encoder = Encoder(args.filename, methods)
+        encoder = Encoder(args.filename, methods,args.encode)
+        print(encoder.sizes)
+        encoder.encode()
 
     if args.decode:
         pass

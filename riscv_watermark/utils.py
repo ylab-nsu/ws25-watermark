@@ -8,6 +8,7 @@ def parse_methods(methods: str):
 def decode_instruction(data, offset):
     instruction = int.from_bytes(data[offset:offset+2], byteorder='little')
 
+    # переписать
     if (instruction & 0b11) != 0b11:
         return instruction, 2
     else:
