@@ -1,4 +1,5 @@
 import argparse
+
 from .encoder import Encoder
 from .watermarkers.factory import fget_watermarker
 

@@ -1,5 +1,5 @@
-from capstone import Cs, CS_ARCH_RISCV, CS_MODE_RISCV64, CS_MODE_RISCV32, CS_MODE_RISCVC
-
+from capstone import (CS_ARCH_RISCV, CS_MODE_RISCV32, CS_MODE_RISCV64,
+                      CS_MODE_RISCVC, Cs)
 from riscv_watermark.watermarkers.interface import Watermarker
 
 """

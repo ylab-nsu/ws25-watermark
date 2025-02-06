@@ -19,6 +19,9 @@ python = "^3.11"
 pyelftools = "^0.31"
 capstone = "^5.0.5"
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.9.4"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

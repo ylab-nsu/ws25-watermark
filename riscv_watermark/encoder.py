@@ -1,7 +1,10 @@
+from itertools import cycle
+
 from riscv_watermark.watermarkers.interface import Watermarker
+
 from .elf import ElfWorker
 from .exceptions import NoSizeException
-from itertools import cycle
+
 
 class Encoder:
     def __init__(self, src_filename: str, methods: list[Watermarker], message: str):
