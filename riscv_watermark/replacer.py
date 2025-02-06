@@ -1,5 +1,4 @@
 import sys
-from elftools.elf.elffile import ELFFile
 
 """
 Replaces occurancies of "addi rd, rs1, 0" to "add rd, rs1, zero" and vice versa
