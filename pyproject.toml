@@ -3,7 +3,10 @@ readme = "README.md"
 [tool.poetry]
 name = "riscv_watermark"
 version = "0.0.1"
-
+description = "water"
+authors = [
+"MKSP"
+]
 packages = [
     { include = "riscv_watermark"},
 ]
@@ -12,7 +15,7 @@ packages = [
 riscv-watermark = "riscv_watermark.main:main"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.11"
 pyelftools = "^0.31"
 capstone = "^5.0.5"
 

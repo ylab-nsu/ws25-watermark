@@ -1,7 +1,5 @@
 import argparse
-
 from .encoder import Encoder
-from .utils import parse_methods
 from .watermarkers.factory import fget_watermarker
 
 

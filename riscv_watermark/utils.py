@@ -1,3 +1,6 @@
+from elftools.elf.elffile import ELFFile
+
+
 """
 Parses watermark methods to use
 """
