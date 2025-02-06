@@ -1,4 +1,6 @@
-from . import *
+from .addi_watermarker.module import AddiWatermarker
+from .stack_watermarker.module import StackWatermarker
+from .zerofier_watermarker.module import ZerofierWatermarker
 
 
 def fget_watermarker(name: str):
