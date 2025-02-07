@@ -17,7 +17,7 @@ class Watermarker(ABC):
     """
 
     @abstractmethod
-    def decode(self, filename: str):
+    def decode(self, filename: str) -> str:
         pass
 
     """
