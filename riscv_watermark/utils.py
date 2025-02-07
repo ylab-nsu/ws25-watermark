@@ -1,14 +1,12 @@
 from elftools.elf.elffile import ELFFile
+import bitstruct
 
 """
 Parses watermark methods to use
 """
 
-import bitstruct
-
-
 def get_instruction_length(instr):
-    """Определяет длину инструкции в байтах по её битам."""
+    """Определяет длину инструкции в байтах по её первым 16 битам."""
     # Распаковываем первые 16 бит
     first_16 = bitstruct.unpack('u16', instr[:2])[0]
 
@@ -26,17 +24,13 @@ def get_instruction_length(instr):
         raise ValueError('Invalid instruction length')
 
 
-def decode_instruction(data, offset):
-    instruction = int.from_bytes(data[offset : offset + 2], byteorder='little')
+def get_instruction(data, offset):
+    """Возвращает следующую инструкцию и её длину."""
+    instruction_length_encoding = int.from_bytes(data[offset : offset + 2], byteorder='little')
+    instruction_length = get_instruction_length(instruction_length_encoding)
 
-    # переписать
-    if (instruction & 0b11) != 0b11:
-        return instruction, 2
-    else:
-        instruction = int.from_bytes(
-            data[offset : offset + 4], byteorder='little'
-        )
-        return instruction, 4
+    instruction = int.from_bytes(data[offset : offset + instruction_length], byteorder='little')
+    return instruction, instruction_length
 
 
 def copy_file(input_file, output_file):
