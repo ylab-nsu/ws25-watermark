@@ -1,6 +1,6 @@
 import argparse
 import logging
-
+from elftools.elf.elffile import ELFFile
 from riscv_watermark.encoder import Encoder
 from riscv_watermark.decoder import Decoder
 from riscv_watermark.watermarkers.factory import fget_watermarker
@@ -41,10 +41,15 @@ def main():
     if args.encode:
         encoder = Encoder(args.filename, methods, args.encode)
         logger.info(encoder.sizes)
-        logger.inf('encoding finished')
+        logger.info('encoding finished')
         new_data = encoder.encode()
         new_filename = args.filename + '.patched'
-        with open(new_filename, 'wb') as f:
+        with open(new_filename, 'wb') as f, open(args.filename, 'rb') as fi:
+            f.write(fi.read())
+            fi.seek(0)
+            elfi = ELFFile(fi)
+            textaddr = elfi.get_section_by_name('.text')['sh_addr']
+            f.seek(textaddr)
             f.write(new_data)
     if args.decode:
         decoder = Decoder(args.filename, methods)

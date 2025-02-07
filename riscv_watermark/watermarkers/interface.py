@@ -38,8 +38,9 @@ class Watermarker(ABC):
     def disassembly(self, filename: str):
         with open(filename, 'rb') as f:
             elf = ELFFile(f)
-            code = elf.get_section_by_name('.text').data()
+            code = elf.get_section_by_name('.text')
             addr = code['sh_addr']
+            code = code.data()
             md = Cs(
                 CS_ARCH_RISCV,
                 CS_MODE_RISCV64 | CS_MODE_RISCV32 | CS_MODE_RISCVC,

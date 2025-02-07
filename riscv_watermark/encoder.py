@@ -4,7 +4,7 @@ from itertools import cycle
 
 from riscv_watermark.watermarkers.interface import Watermarker
 
-from .exceptions import NoSizeException
+from riscv_watermark.exceptions import NoSizeException
 
 logger = logging.getLogger(__name__)
 
@@ -31,15 +31,16 @@ class Encoder:
         # варьироваться в зависимости от количества замен
 
     def encode(self) -> bytes:
-        if not self.can_encode():
-            logger.info('Not enough size to encode')
-            raise NoSizeException('')
+#        if not self.can_encode():
+#            logger.info('Not enough size to encode')
+#            raise NoSizeException('')
         new_data = b''
         for watermarker in self.methods:
+            number = watermarker.get_nbits(self.src_filename)  
             c = [
                 i
                 for i, j in zip(
-                    cycle('nonsense'), range(watermarker.get_nbits)
+                    cycle('nonsense'), range(number)
                 )
             ]
             new_data = watermarker.encode(self.src_filename, c)

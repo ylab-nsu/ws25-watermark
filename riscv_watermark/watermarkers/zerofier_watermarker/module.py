@@ -1,4 +1,4 @@
-from .dictionaries import nop_bits, nop_opcodes
+from riscv_watermark.watermarkers.zerofier_watermarker.dictionaries import nop_bits, nop_opcodes
 
 from riscv_watermark.watermarkers.interface import Watermarker
 
@@ -25,7 +25,7 @@ def conv_func(mnemonic, op_str):
         machine_code = f'0000000{rs1_bin}000{rd_bin}{opcode}'
 
     # Преобразуем полученный двоичный код в шестнадцатиричное представление
-    hex_code = hex(int(machine_code, 2))
+    hex_code = hex(int(machine_code, 2))[2:]
 
     return hex_code
 
@@ -33,9 +33,9 @@ class ZerofierWatermarker(Watermarker):
     def __init__(self):
         super().__init__()
 
-    def encode(self, filename, message):
+    def encode(self, filename: str, message: str):
         opcodes = ''
-        bitstr = ''.join(format(x, 'b') for x in bytearray(message, 'utf-8'))
+        bitstr = ''.join(format(x, 'b') for x in bytes(str(message), 'utf-8'))
         bslen = len(bitstr)
         tracker = 0
         for i in super().disassembly(filename):
@@ -57,7 +57,7 @@ class ZerofierWatermarker(Watermarker):
                     opcodes += str(i)[str(i).find('[') + 1 : str(i).find(']')]
             else:
                 opcodes += str(i)[str(i).find('[') + 1 : str(i).find(']')]
-        return bytes(opcodes)
+        return bytearray.fromhex(opcodes)
 
     def decode(self, filename):
         bitstr = ''
@@ -79,7 +79,7 @@ class ZerofierWatermarker(Watermarker):
         for i in super().disassembly(filename):
             if i.mnemonic == 'c.nop':
                 count += 2
-            elif i.mnemonic in ['c.addi', 'c.add']:
+            elif i.mnemonic in ['addi', 'add']:
                 count += 1
         return count
 
