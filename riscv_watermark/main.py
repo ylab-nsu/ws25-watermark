@@ -1,8 +1,8 @@
 import argparse
-
+import logging
 from .encoder import Encoder
 from .watermarkers.factory import fget_watermarker
-
+logger = logging.getLogger(__name__)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -28,11 +28,14 @@ def main():
     methods = args.methods.split(',')
     methods = [fget_watermarker(x) for x in methods]
     if None in methods:
-        print("Unsupported method detected")
+        logger.info("Unsupported method detected")
+        return
     if args.encode:
         encoder = Encoder(args.filename, methods, args.encode)
-        print(encoder.sizes)
-        encoder.encode()
-
+        logger.info(encoder.sizes)
+        new_data = encoder.encode()
+        new_filename = args.filename + '.patched'
+        with open(new_filename, 'wb') as f:
+            f.write(new_data)
     if args.decode:
-        pass
+        raise NotImplementedError
