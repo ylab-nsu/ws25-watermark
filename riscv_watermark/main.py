@@ -32,12 +32,8 @@ def main():
     methods = args.methods.split(',')
     methods = [fget_watermarker(x) for x in methods]
     if None in methods:
-<<<<<<< HEAD
         logger.info("Unsupported method detected")
         return
-=======
-        print('Unsupported method detected')
->>>>>>> 527360f6cfa02a27096cdfb4264472951e99a26e
     if args.encode:
         encoder = Encoder(args.filename, methods, args.encode)
         logger.info(encoder.sizes)
