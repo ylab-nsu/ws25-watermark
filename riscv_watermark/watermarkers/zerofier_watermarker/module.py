@@ -1,4 +1,4 @@
-from dictionaries import add_bits, nop_bits, nop_opcodes
+from .dictionaries import nop_bits, nop_opcodes
 
 from riscv_watermark.watermarkers.interface import Watermarker
 
@@ -6,6 +6,28 @@ from riscv_watermark.watermarkers.interface import Watermarker
 Sample watermark example that just sets "add","addi", "c.add", "c.addi" to zeros  
 """
 
+def conv_func(mnemonic, op_str):
+    operands = op_str.split(', ')
+
+    rd = operands[0][1:]
+    rs1 = operands[1][1:]
+
+    # rd и rs1 в 5 битные двоичных строках
+    rd_bin = format(int(rd), '05b')
+    rs1_bin = format(int(rs1), '05b')
+
+    if mnemonic == 'addi':
+        opcode = '0010011'
+        machine_code = f'0000000{rs1_bin}000{rd_bin}{opcode}'
+
+    elif mnemonic == 'add':
+        opcode = '0110011'
+        machine_code = f'0000000{rs1_bin}000{rd_bin}{opcode}'
+
+    # Преобразуем полученный двоичный код в шестнадцатиричное представление
+    hex_code = hex(int(machine_code, 2))
+
+    return hex_code
 
 class ZerofierWatermarker(Watermarker):
     def __init__(self):
@@ -61,26 +83,3 @@ class ZerofierWatermarker(Watermarker):
                 count += 1
         return count
 
-
-def conv_func(mnemonic, op_str):
-    operands = op_str.split(', ')
-
-    rd = operands[0][1:]
-    rs1 = operands[1][1:]
-
-    # rd и rs1 в 5 битные двоичных строках
-    rd_bin = format(int(rd), '05b')
-    rs1_bin = format(int(rs1), '05b')
-
-    if mnemonic == 'addi':
-        opcode = '0010011'
-        machine_code = f'0000000{rs1_bin}000{rd_bin}{opcode}'
-
-    elif mnemonic == 'add':
-        opcode = '0110011'
-        machine_code = f'0000000{rs1_bin}000{rd_bin}{opcode}'
-
-    # Преобразуем полученный двоичный код в шестнадцатиричное представление
-    hex_code = hex(int(machine_code, 2))
-
-    return hex_code

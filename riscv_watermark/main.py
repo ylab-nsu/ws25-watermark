@@ -1,9 +1,9 @@
 import argparse
 import logging
 
-from .encoder import Encoder
-from .decoder import Decoder
-from .watermarkers.factory import fget_watermarker
+from riscv_watermark.encoder import Encoder
+from riscv_watermark.decoder import Decoder
+from riscv_watermark.watermarkers.factory import fget_watermarker
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def main():
         print('Specify method (encode or decode)')
         return
 
-    methods = args.methods.split(',')
+    methods = str(args.methods).split(',')
     methods = [fget_watermarker(x) for x in methods]
     if None in methods:
         logger.info('Unsupported method detected')
@@ -51,3 +51,6 @@ def main():
         returned_string = decoder.decode()
         logger.info('decoding finished')
         print(returned_string)
+
+if __name__ == '__main__':
+    main()
