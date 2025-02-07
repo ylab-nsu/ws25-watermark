@@ -1,6 +1,7 @@
 import argparse
 import logging
 from .encoder import Encoder
+from .decoder import Decoder
 from .watermarkers.factory import fget_watermarker
 logger = logging.getLogger(__name__)
 
@@ -37,9 +38,13 @@ def main():
     if args.encode:
         encoder = Encoder(args.filename, methods, args.encode)
         logger.info(encoder.sizes)
+        logger.inf('encoding finished')
         new_data = encoder.encode()
         new_filename = args.filename + '.patched'
         with open(new_filename, 'wb') as f:
             f.write(new_data)
     if args.decode:
-        raise NotImplementedError
+        decoder = Decoder(args.filename, methods)
+        returned_string = decoder.decode()
+        logger.info('decoding finished')
+        print(returned_string)
