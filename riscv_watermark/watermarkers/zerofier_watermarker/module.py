@@ -1,5 +1,5 @@
+from dictionaries import add_bits, conv_func, nop_bits, nop_opcodes
 from riscv_watermark.watermarkers.interface import Watermarker
-from dictionaries import nop_bits, add_bits, nop_opcodes, conv_func
 
 """
 Sample watermark example that just sets "add","addi", "c.add", "c.addi" to zeros  
@@ -16,8 +16,10 @@ class ZerofierWatermarker(Watermarker):
         tracker = 0
         for i in super().disassembly(filename):
             if tracker < bslen: #the demo uses all available bits, but really it can be any amount, so we should modify until the message is coded
-                if i.mnemonic == "addi" or i.mnemonic == "add":
+                if i.mnemonic == "addi" or i.mnemonic == "add" and list(i.op_str.split())[-1] in ['0', 'x0']:
                     if bitstr[tracker] == '1' and i.mnemonic == 'add': #addi = 1; add = 0
+                        conv_func(i.mnemonic, i.op_str)
+                    elif bitstr[tracker] == '0' and i.mnemonic == 'addi':
                         conv_func(i.mnemonic, i.op_str)
                     tracker += 1
                 elif i.mnemonic == 'c.nop':
