@@ -52,10 +52,10 @@ def main():
             f.seek(textaddr)
             f.write(new_data)
     if args.decode:
-        decoder = Decoder(args.filename, methods)
-        returned_string = decoder.decode()
+        decoded = Decoder(args.filename, methods)
+        ret_str = decoded.decode()
         logger.info('decoding finished')
-        print(returned_string)
+        print(ret_str)
 
 if __name__ == '__main__':
     main()
