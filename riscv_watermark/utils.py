@@ -4,6 +4,27 @@ from elftools.elf.elffile import ELFFile
 Parses watermark methods to use
 """
 
+import bitstruct
+
+
+def get_instruction_length(instr):
+    """Определяет длину инструкции в байтах по её битам."""
+    # Распаковываем первые 16 бит
+    first_16 = bitstruct.unpack('u16', instr[:2])[0]
+
+    if first_16 & 0b11 != 0b11:
+        return 2
+    elif first_16 & 0b11111 != 0b11111:
+        return 4
+    elif first_16 & 0b111111 == 0b011111:
+        return 6
+    elif first_16 & 0b1111111 == 0b0111111:
+        return 8
+    elif (first_16 >> 12) & 0b111 != 111:
+        return 80 + 16 * ((first_16 >> 12) & 0b111)
+    else:
+        raise ValueError('Invalid instruction length')
+
 
 def decode_instruction(data, offset):
     instruction = int.from_bytes(data[offset : offset + 2], byteorder='little')
