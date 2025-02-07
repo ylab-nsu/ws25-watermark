@@ -1,8 +1,11 @@
 import argparse
 import logging
+
 from .encoder import Encoder
 from .watermarkers.factory import fget_watermarker
+
 logger = logging.getLogger(__name__)
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -32,7 +35,7 @@ def main():
     methods = args.methods.split(',')
     methods = [fget_watermarker(x) for x in methods]
     if None in methods:
-        logger.info("Unsupported method detected")
+        logger.info('Unsupported method detected')
         return
     if args.encode:
         encoder = Encoder(args.filename, methods, args.encode)

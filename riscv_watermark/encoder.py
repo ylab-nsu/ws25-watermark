@@ -1,9 +1,12 @@
-from itertools import cycle
 import logging
 import sys
+from itertools import cycle
+
 from riscv_watermark.watermarkers.interface import Watermarker
-logger = logging.getLogger(__name__)
+
 from .exceptions import NoSizeException
+
+logger = logging.getLogger(__name__)
 
 
 class Encoder:
@@ -23,19 +26,25 @@ class Encoder:
         return sum(self.sizes)
 
     def can_encode(self):
-        return self.total_size() / 8 >= len(self.message.encode("utf-8"))
-        # тут на самом деле не 8. Значение может варьироваться в зависимости от количества замен
+        return self.total_size() / 8 >= len(self.message.encode('utf-8'))
+        # тут на самом деле не 8. Значение может
+        # варьироваться в зависимости от количества замен
 
     def encode(self) -> bytes:
         if not self.can_encode():
-            logger.info("Not enough size to encode")
-            raise NoSizeException("")
-        new_data = ''
+            logger.info('Not enough size to encode')
+            raise NoSizeException('')
+        new_data = b''
         for watermarker in self.methods:
-            c = [i for i, j in zip(cycle('nonsense'), range(watermarker.get_nbits))]
+            c = [
+                i
+                for i, j in zip(
+                    cycle('nonsense'), range(watermarker.get_nbits)
+                )
+            ]
             new_data = watermarker.encode(self.src_filename, c)
-        if new_data != '':
+        if new_data != b'':
             return new_data
         else:
-            logger.info("encoding failed")
-            sys.exit()  
+            logger.info('encoding failed')
+            sys.exit()

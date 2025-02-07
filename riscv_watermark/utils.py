@@ -1,9 +1,10 @@
-from elftools.elf.elffile import ELFFile
 import bitstruct
+from elftools.elf.elffile import ELFFile
 
 """
 Parses watermark methods to use
 """
+
 
 def get_instruction_length(instr):
     """Определяет длину инструкции в байтах по её первым 16 битам."""
@@ -26,10 +27,14 @@ def get_instruction_length(instr):
 
 def get_instruction(data, offset):
     """Возвращает следующую инструкцию и её длину."""
-    instruction_length_encoding = int.from_bytes(data[offset : offset + 2], byteorder='little')
+    instruction_length_encoding = int.from_bytes(
+        data[offset : offset + 2], byteorder='little'
+    )
     instruction_length = get_instruction_length(instruction_length_encoding)
 
-    instruction = int.from_bytes(data[offset : offset + instruction_length], byteorder='little')
+    instruction = int.from_bytes(
+        data[offset : offset + instruction_length], byteorder='little'
+    )
     return instruction, instruction_length
 
 
@@ -80,7 +85,7 @@ def modify_text_section(section):
     print()
     offset = 0
     while offset < len(text_data):
-        instruction, size = decode_instruction(text_data, offset)
+        instruction, size = get_instruction(text_data, offset)
         if (instruction & 0x7F) == 0x33:
             new_instruction = transform_add_to_addi(instruction)
             if instruction != new_instruction:
@@ -105,7 +110,7 @@ def modify_elf_file(input_filename: str, output_filename: str):
 
     input_text_section = input_elf.get_section_by_name('.text')
     modified_text = modify_text_section(input_text_section)
-    text_data = input_text_section.data()
+    # text_data = input_text_section.data()
 
     offset = input_text_section['sh_addr']
     size = input_text_section['sh_size']
