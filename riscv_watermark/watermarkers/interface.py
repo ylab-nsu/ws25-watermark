@@ -33,7 +33,7 @@ class Watermarker(ABC):
 
     @abstractmethod
     def get_nbits(self, filename: str) -> int:
-        pass
+        return 0
 
     def disassembly(self, filename: str):
         with open(filename, 'rb') as f:

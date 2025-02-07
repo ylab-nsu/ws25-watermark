@@ -38,11 +38,12 @@ class ZerofierWatermarker(Watermarker):
         bitstr = ''.join(format(x, 'b') for x in bytes(str(message), 'utf-8'))
         bslen = len(bitstr)
         tracker = 0
-        for i in super().disassembly(filename):
+        listing = super().disassembly(filename)
+        for i in listing:
             if tracker < bslen: #the demo uses all available bits, but really it can be any amount, so we should modify until the message is coded
                 if i.mnemonic == "addi" or i.mnemonic == "add" and list(i.op_str.split())[-1] in ['0', 'x0']:
                     if (bitstr[tracker] == '1' and i.mnemonic == 'add') or (bitstr[tracker] == '0' and i.mnemonic == 'addi'): #addi = 1; add = 0
-                        opcodes += conv_func(i.mnemonic, i.op_str)
+                        opcodes += conv_func(i.mnemonic, str(i)[str(i).find('[') + 1 : str(i).find(']')])
                     tracker += 1
                 elif i.mnemonic == 'c.nop':
                     if bslen - tracker > 1:
@@ -62,7 +63,8 @@ class ZerofierWatermarker(Watermarker):
     def decode(self, filename):
         bitstr = ''
         nop_bits_revd = {j: i for i, j in nop_bits}
-        for i in super().disassembly(filename):
+        listing = super().disassembly(filename)
+        for i in listing:
             if i.mnemonic == 'addi':
                 bitstr += '1'
             elif i.mnemonic == 'add':
@@ -76,7 +78,8 @@ class ZerofierWatermarker(Watermarker):
 
     def get_nbits(self, filename):
         count = 0
-        for i in super().disassembly(filename):
+        listing = super().disassembly(filename)
+        for i in listing:
             if i.mnemonic == 'c.nop':
                 count += 2
             elif i.mnemonic in ['addi', 'add']:

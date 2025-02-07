@@ -36,7 +36,9 @@ class Encoder:
 #            raise NoSizeException('')
         new_data = b''
         for watermarker in self.methods:
-            number = watermarker.get_nbits(self.src_filename)  
+            number = watermarker.get_nbits(self.src_filename) // 8
+            if number < 1:
+                logger.info("low amount of codeable bits")  
             c = [
                 i
                 for i, j in zip(
