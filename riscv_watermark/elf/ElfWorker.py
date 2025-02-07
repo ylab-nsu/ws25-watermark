@@ -11,6 +11,6 @@ class ElfWorker:
         with open(self.src_filename, mode) as f:
             elf = ELFFile(f)
             text = elf.get_section_by_name(section_name)
-            self.text_offset = text["sh_addr"]
-            self.text_size = text["sh_size"]
+            self.text_offset = text['sh_addr']
+            self.text_size = text['sh_size']
             return text.data()
