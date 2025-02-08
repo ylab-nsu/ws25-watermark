@@ -7,10 +7,9 @@ nop_bits = {
     '11': 'c.and x8, x8',
 }
 
-# Big endian (RISC-V uses little-endian)
 nop_opcodes = {
-    'c.nop':  '0001',
-    'c.or x8, x8': '8C41',
-    'c.andi x8, 0b011111': '887D',
-    'c.and x8, x8': '8C61',
+    'c.nop':  '0100',
+    'c.or x8, x8': '418c',
+    'c.andi x8, 0b011111': '7d88',
+    'c.and x8, x8': '618c',
 }

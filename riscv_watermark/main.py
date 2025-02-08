@@ -54,8 +54,8 @@ def main():
     if args.decode:
         decoded = Decoder(args.filename, methods)
         ret_str = decoded.decode()
-        logger.info('decoding finished')
         print(ret_str)
+        logger.info('decoding finished')
 
 if __name__ == '__main__':
     main()

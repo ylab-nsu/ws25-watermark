@@ -1,5 +1,4 @@
 import logging
-import sys
 from riscv_watermark.watermarkers.interface import Watermarker
 logger = logging.getLogger(__name__)
 

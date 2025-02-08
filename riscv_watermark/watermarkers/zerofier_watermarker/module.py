@@ -15,6 +15,18 @@ def decode_bitstring(bs):
     decoded_string = ''.join(chr(int(char, 2)) for char in chars)
     return decoded_string
 
+def dict_rev(di):
+    idi = {}
+    for i, j in di.items():
+        if j not in idi.keys():
+            idi[j] = i
+        else:
+            idi[j] = [*idi[j]] if not isinstance(idi[j], str) else [idi[j]]
+            idi[j].append(i)
+            idi[j] = tuple(idi[j])
+    return idi
+
+
 
 def conv_func(mnemonic, op_str):
     operands = op_str.split(', ')
@@ -45,16 +57,16 @@ class ZerofierWatermarker(Watermarker):
 
     def encode(self, filename: str, message: str):
         opcodes = ''
-        bitstr = ''.join(format(ord(char), '08b') for char in 'hello')
+        bitstr = ''.join(format(ord(char), '08b') for char in message)
         bslen = len(bitstr)
         tracker = 0
         listing = super().disassembly(filename)
         for i in listing:
+            orig_opcode = str(i)[str(i).find('[') + 1 : str(i).find(']')]
             if tracker < bslen: #the demo uses all available bits, but really it can be any amount, so we should modify until the message is coded
                 if (i.mnemonic == "addi" or i.mnemonic == "add") and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
                     if (bitstr[tracker] == '1' and i.mnemonic == 'add') or (bitstr[tracker] == '0' and i.mnemonic == 'addi'): #addi = 1; add = 0
-                        #opcodes += conv_func(i.mnemonic, str(i)[str(i).find('[') + 1 : str(i).find(']')])
-                        opcode = str(i)[str(i).find('[') + 1 : str(i).find(']')]
+                        opcode = orig_opcode
                         mnem = i.mnemonic
                         operands = i.op_str
                         out = str(convert_add_addi(int.from_bytes(bytearray.fromhex(opcode))))
@@ -67,7 +79,8 @@ class ZerofierWatermarker(Watermarker):
                         new_mnem = nop_bits[
                             str(bitstr[tracker : tracker + 1]) + '0'
                         ]
-                    opcodes += nop_opcodes[new_mnem]
+                    opcode = nop_opcodes[new_mnem]
+                    opcodes += opcode
                     tracker += 2
                 else:
                     out = str(i)[str(i).find('[') + 1 : str(i).find(']')]
@@ -79,16 +92,17 @@ class ZerofierWatermarker(Watermarker):
 
     def decode(self, filename):
         bitstr = ''
-        nop_bits_revd = {j: i for i, j in nop_bits}
+        nop_bits_revd = dict_rev(nop_bits)
+        nop_opcodes_revd = dict_rev(nop_opcodes)
         listing = super().disassembly(filename)
         for i in listing:
-            if i.mnemonic == 'addi':
+            orig_opcode = str(i)[str(i).find('[') + 1 : str(i).find(']')]
+            if i.mnemonic == 'addi' and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
                 bitstr += '1'
-            elif i.mnemonic == 'add':
+            elif i.mnemonic == 'add' and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
                 bitstr += '0'
-            elif i.mnemonic in nop_bits_revd:
-                bitstr += nop_bits_revd[i.mnemonic]
-
+            elif orig_opcode in list(nop_opcodes_revd.keys()):
+                bitstr += nop_bits_revd[nop_opcodes_revd[orig_opcode]]
         bs = decode_bitstring(bitstr)
         return bs
 
@@ -98,7 +112,7 @@ class ZerofierWatermarker(Watermarker):
         for i in listing:
             if i.mnemonic == 'c.nop':
                 count += 2
-            elif i.mnemonic in ['addi', 'add']:
+            elif i.mnemonic in ['addi', 'add'] and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
                 count += 1
         return count
 
