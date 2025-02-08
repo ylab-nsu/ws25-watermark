@@ -8,14 +8,15 @@ from riscv_watermark.watermarkers.eq_instr_watermarker.dictionaries import (
 from riscv_watermark.watermarkers.interface import Watermarker
 
 """
-Sample watermark example that just sets "add","addi", "c.add", "c.addi" to zeros  
+Sample watermark example that just sets
+"add","addi", "c.add", "c.addi" to zeros
 """
 
 
 def decode_bitstring(bs):
     # Split the bit string into chunks of 8 bits (1 byte)
     n = 8
-    chars = [bs[i : i + n] for i in range(0, len(bs), n)]
+    chars = [bs[i: i + n] for i in range(0, len(bs), n)]
 
     # Convert each chunk into an ASCII character
     decoded_string = ''.join(chr(int(char, 2)) for char in chars)
@@ -69,10 +70,13 @@ class EquivalentInstructionWatermarker(Watermarker):
         tracker = 0
         listing = super().disassembly(filename)
         for i in listing:
-            orig_opcode = str(i)[str(i).find('[') + 1 : str(i).find(']')]
+            orig_opcode = str(i)[str(i).find('[') + 1: str(i).find(']')]
             if (
                 tracker < bslen
-            ):   # the demo uses all available bits, but really it can be any amount, so we should modify until the message is coded
+            ):
+                # the demo uses all available bits, but
+                # really it can be any amount, so we
+                # should modify until the message is coded
                 if (i.mnemonic == 'addi' or i.mnemonic == 'add') and list(
                     i.op_str.split()
                 )[-1] in ['0', 'x0', 'zero']:
@@ -89,19 +93,19 @@ class EquivalentInstructionWatermarker(Watermarker):
                     tracker += 1
                 elif i.mnemonic == 'c.nop':
                     if bslen - tracker > 1:
-                        new_mnem = nop_bits[str(bitstr[tracker : tracker + 2])]
+                        new_mnem = nop_bits[str(bitstr[tracker: tracker + 2])]
                     else:
                         new_mnem = nop_bits[
-                            str(bitstr[tracker : tracker + 1]) + '0'
+                            str(bitstr[tracker: tracker + 1]) + '0'
                         ]
                     opcode = nop_opcodes[new_mnem]
                     opcodes += opcode
                     tracker += 2
                 else:
-                    out = str(i)[str(i).find('[') + 1 : str(i).find(']')]
+                    out = str(i)[str(i).find('[') + 1: str(i).find(']')]
                     opcodes += out
             else:
-                out = str(i)[str(i).find('[') + 1 : str(i).find(']')]
+                out = str(i)[str(i).find('[') + 1: str(i).find(']')]
                 opcodes += out
         return bytearray.fromhex(opcodes)
 
@@ -111,7 +115,7 @@ class EquivalentInstructionWatermarker(Watermarker):
         nop_opcodes_revd = dict_rev(nop_opcodes)
         listing = super().disassembly(filename)
         for i in listing:
-            orig_opcode = str(i)[str(i).find('[') + 1 : str(i).find(']')]
+            orig_opcode = str(i)[str(i).find('[') + 1: str(i).find(']')]
             if i.mnemonic == 'addi' and list(i.op_str.split())[-1] in [
                 '0',
                 'x0',

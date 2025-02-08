@@ -12,7 +12,8 @@ def convert_add_addi(instr):
 
 
 def is_addx0(instr):
-    """Проверяет, является ли инструкция `add rd, rs1, rs2` с rs1 или rs2 = x0."""
+    """Проверяет, является ли инструкция
+    `add rd, rs1, rs2` с rs1 или rs2 = x0."""
     opcode1 = instr & 0x7F  # opcode1 (7 бит, младшие биты)
     rd = (instr >> 7) & 0x1F  # rd (5 бит)
     opcode2 = (instr >> 12) & 0x7  # opcode2 (3 бита)

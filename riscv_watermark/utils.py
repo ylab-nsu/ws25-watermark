@@ -28,12 +28,12 @@ def get_instruction_length(instr):
 def get_instruction(data, offset):
     """Возвращает следующую инструкцию и её длину."""
     instruction_length_encoding = int.from_bytes(
-        data[offset : offset + 2], byteorder='little'
+        data[offset: offset + 2], byteorder='little'
     )
     instruction_length = get_instruction_length(instruction_length_encoding)
 
     instruction = int.from_bytes(
-        data[offset : offset + instruction_length], byteorder='little'
+        data[offset: offset + instruction_length], byteorder='little'
     )
     return instruction, instruction_length
 
@@ -89,13 +89,13 @@ def modify_text_section(section):
         if (instruction & 0x7F) == 0x33:
             new_instruction = transform_add_to_addi(instruction)
             if instruction != new_instruction:
-                text_data[offset : offset + size] = new_instruction.to_bytes(
+                text_data[offset: offset + size] = new_instruction.to_bytes(
                     size, byteorder='little'
                 )
         if (instruction & 0x7F) == 0x13:
             new_instruction = transform_addi_to_add(instruction)
             if instruction != new_instruction:
-                text_data[offset : offset + size] = new_instruction.to_bytes(
+                text_data[offset: offset + size] = new_instruction.to_bytes(
                     size, byteorder='little'
                 )
         offset += size
