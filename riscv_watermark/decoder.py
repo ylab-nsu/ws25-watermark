@@ -1,5 +1,7 @@
 import logging
+
 from riscv_watermark.watermarkers.interface import Watermarker
+
 logger = logging.getLogger(__name__)
 
 class Decoder:

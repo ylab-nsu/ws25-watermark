@@ -1,6 +1,8 @@
-from riscv_watermark.watermarkers.zerofier_watermarker.dictionaries import nop_bits, nop_opcodes
-from riscv_watermark.watermarkers.zerofier_watermarker.add_converter import convert_add_addi
 from riscv_watermark.watermarkers.interface import Watermarker
+from riscv_watermark.watermarkers.zerofier_watermarker.add_converter import \
+    convert_add_addi
+from riscv_watermark.watermarkers.zerofier_watermarker.dictionaries import (
+    nop_bits, nop_opcodes)
 
 """
 Sample watermark example that just sets "add","addi", "c.add", "c.addi" to zeros  

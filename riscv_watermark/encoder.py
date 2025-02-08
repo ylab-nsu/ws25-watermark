@@ -2,9 +2,8 @@ import logging
 import sys
 from itertools import cycle
 
-from riscv_watermark.watermarkers.interface import Watermarker
-
 from riscv_watermark.exceptions import NoSizeException
+from riscv_watermark.watermarkers.interface import Watermarker
 
 logger = logging.getLogger(__name__)
 

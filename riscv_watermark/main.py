@@ -1,9 +1,11 @@
 import argparse
 import logging
 import sys
+
 from elftools.elf.elffile import ELFFile
-from riscv_watermark.encoder import Encoder
+
 from riscv_watermark.decoder import Decoder
+from riscv_watermark.encoder import Encoder
 from riscv_watermark.watermarkers.factory import fget_watermarker
 
 logger = logging.getLogger(__name__)
