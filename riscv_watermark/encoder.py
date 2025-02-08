@@ -38,14 +38,15 @@ class Encoder:
         for watermarker in self.methods:
             number = watermarker.get_nbits(self.src_filename)
             number //= 8
+            c = list(self.message)
+            msg_len = len(c)
             if number < 1:
                 logger.info("low amount of codeable bits")  
-            c = [
-                i
-                for i, j in zip(
-                    cycle('nonsense'), range(number)
-                )
-            ]
+            if number < msg_len:
+                logger.info("Not enough bits to encode the whole message")
+            if number > msg_len:
+                for i in range(number - msg_len):
+                    c.append(' ') #пока так
             new_data = watermarker.encode(self.src_filename, c)
         if new_data != b'':
             return new_data
