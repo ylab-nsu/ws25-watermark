@@ -1,6 +1,6 @@
 from riscv_watermark.watermarkers.stack_watermarker.module import \
     StackWatermarker
-from riscv_watermark.watermarkers.zerofier_watermarker.module import \
+from riscv_watermark.watermarkers.eq_instr_watermarker.module import \
     ZerofierWatermarker
 
 

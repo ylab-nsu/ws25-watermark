@@ -1,6 +1,5 @@
 import argparse
 import logging
-import sys
 
 from elftools.elf.elffile import ELFFile
 

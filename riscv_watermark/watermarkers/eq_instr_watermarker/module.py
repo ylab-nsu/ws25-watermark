@@ -1,7 +1,7 @@
 from riscv_watermark.watermarkers.interface import Watermarker
-from riscv_watermark.watermarkers.zerofier_watermarker.add_converter import \
+from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import \
     convert_add_addi
-from riscv_watermark.watermarkers.zerofier_watermarker.dictionaries import (
+from riscv_watermark.watermarkers.eq_instr_watermarker.dictionaries import (
     nop_bits, nop_opcodes)
 
 """
@@ -69,8 +69,6 @@ class ZerofierWatermarker(Watermarker):
                 if (i.mnemonic == "addi" or i.mnemonic == "add") and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
                     if (bitstr[tracker] == '1' and i.mnemonic == 'add') or (bitstr[tracker] == '0' and i.mnemonic == 'addi'): #addi = 1; add = 0
                         opcode = orig_opcode
-                        mnem = i.mnemonic
-                        operands = i.op_str
                         out = str(convert_add_addi(int.from_bytes(bytearray.fromhex(opcode))))
                         opcodes += out
                     tracker += 1
