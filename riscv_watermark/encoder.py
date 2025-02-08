@@ -1,5 +1,6 @@
 import logging
 import sys
+
 from riscv_watermark.watermarkers.interface import Watermarker
 
 logger = logging.getLogger(__name__)
@@ -27,9 +28,9 @@ class Encoder:
         # варьироваться в зависимости от количества замен
 
     def encode(self) -> bytes:
-#        if not self.can_encode():
-#            logger.info('Not enough size to encode')
-#            raise NoSizeException('')
+        #        if not self.can_encode():
+        #            logger.info('Not enough size to encode')
+        #            raise NoSizeException('')
         new_data = b''
         for watermarker in self.methods:
             number = watermarker.get_nbits(self.src_filename)
@@ -37,12 +38,12 @@ class Encoder:
             c = list(self.message)
             msg_len = len(c)
             if number < 1:
-                logger.info("low amount of codeable bits")  
+                logger.info('low amount of codeable bits')
             if number < msg_len:
-                logger.info("Not enough bits to encode the whole message")
+                logger.info('Not enough bits to encode the whole message')
             if number > msg_len:
                 for i in range(number - msg_len):
-                    c.append(' ') #пока так
+                    c.append(' ')   # пока так
             new_data = watermarker.encode(self.src_filename, c)
         if new_data != b'':
             return new_data

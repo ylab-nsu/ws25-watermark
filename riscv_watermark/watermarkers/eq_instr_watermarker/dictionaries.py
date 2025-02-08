@@ -8,7 +8,7 @@ nop_bits = {
 }
 
 nop_opcodes = {
-    'c.nop':  '0100',
+    'c.nop': '0100',
     'c.or x8, x8': '418c',
     'c.andi x8, 0b011111': '7d88',
     'c.and x8, x8': '618c',

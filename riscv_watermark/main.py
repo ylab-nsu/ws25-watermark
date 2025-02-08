@@ -43,7 +43,7 @@ def main():
     if args.get_nbits:
         enc = Encoder(args.filename, methods, '')
         nbits = enc.getnbits()
-        print(nbits) #пока не работает
+        print(nbits)   # пока не работает
         return
     if args.encode:
         encoder = Encoder(args.filename, methods, args.encode)
@@ -63,6 +63,7 @@ def main():
         ret_str = decoded.decode()
         print(ret_str)
         logger.info('decoding finished')
+
 
 if __name__ == '__main__':
     main()

@@ -1,21 +1,26 @@
-from riscv_watermark.watermarkers.interface import Watermarker
-from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import \
-    convert_add_addi
+from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import (
+    convert_add_addi,
+)
 from riscv_watermark.watermarkers.eq_instr_watermarker.dictionaries import (
-    nop_bits, nop_opcodes)
+    nop_bits,
+    nop_opcodes,
+)
+from riscv_watermark.watermarkers.interface import Watermarker
 
 """
 Sample watermark example that just sets "add","addi", "c.add", "c.addi" to zeros  
 """
 
+
 def decode_bitstring(bs):
     # Split the bit string into chunks of 8 bits (1 byte)
     n = 8
-    chars = [bs[i:i+n] for i in range(0, len(bs), n)]
-    
+    chars = [bs[i : i + n] for i in range(0, len(bs), n)]
+
     # Convert each chunk into an ASCII character
     decoded_string = ''.join(chr(int(char, 2)) for char in chars)
     return decoded_string
+
 
 def dict_rev(di):
     idi = {}
@@ -27,7 +32,6 @@ def dict_rev(di):
             idi[j].append(i)
             idi[j] = tuple(idi[j])
     return idi
-
 
 
 def conv_func(mnemonic, op_str):
@@ -53,7 +57,8 @@ def conv_func(mnemonic, op_str):
 
     return hex_code
 
-class ZerofierWatermarker(Watermarker):
+
+class EquivalentInstructionWatermarker(Watermarker):
     def __init__(self):
         super().__init__()
 
@@ -65,11 +70,21 @@ class ZerofierWatermarker(Watermarker):
         listing = super().disassembly(filename)
         for i in listing:
             orig_opcode = str(i)[str(i).find('[') + 1 : str(i).find(']')]
-            if tracker < bslen: #the demo uses all available bits, but really it can be any amount, so we should modify until the message is coded
-                if (i.mnemonic == "addi" or i.mnemonic == "add") and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
-                    if (bitstr[tracker] == '1' and i.mnemonic == 'add') or (bitstr[tracker] == '0' and i.mnemonic == 'addi'): #addi = 1; add = 0
+            if (
+                tracker < bslen
+            ):   # the demo uses all available bits, but really it can be any amount, so we should modify until the message is coded
+                if (i.mnemonic == 'addi' or i.mnemonic == 'add') and list(
+                    i.op_str.split()
+                )[-1] in ['0', 'x0', 'zero']:
+                    if (bitstr[tracker] == '1' and i.mnemonic == 'add') or (
+                        bitstr[tracker] == '0' and i.mnemonic == 'addi'
+                    ):   # addi = 1; add = 0
                         opcode = orig_opcode
-                        out = str(convert_add_addi(int.from_bytes(bytearray.fromhex(opcode))))
+                        out = str(
+                            convert_add_addi(
+                                int.from_bytes(bytearray.fromhex(opcode))
+                            )
+                        )
                         opcodes += out
                     tracker += 1
                 elif i.mnemonic == 'c.nop':
@@ -97,9 +112,17 @@ class ZerofierWatermarker(Watermarker):
         listing = super().disassembly(filename)
         for i in listing:
             orig_opcode = str(i)[str(i).find('[') + 1 : str(i).find(']')]
-            if i.mnemonic == 'addi' and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
+            if i.mnemonic == 'addi' and list(i.op_str.split())[-1] in [
+                '0',
+                'x0',
+                'zero',
+            ]:
                 bitstr += '1'
-            elif i.mnemonic == 'add' and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
+            elif i.mnemonic == 'add' and list(i.op_str.split())[-1] in [
+                '0',
+                'x0',
+                'zero',
+            ]:
                 bitstr += '0'
             elif orig_opcode in list(nop_opcodes_revd.keys()):
                 bitstr += nop_bits_revd[nop_opcodes_revd[orig_opcode]]
@@ -112,7 +135,8 @@ class ZerofierWatermarker(Watermarker):
         for i in listing:
             if i.mnemonic == 'c.nop':
                 count += 2
-            elif i.mnemonic in ['addi', 'add'] and list(i.op_str.split())[-1] in ['0', 'x0', 'zero']:
+            elif i.mnemonic in ['addi', 'add'] and list(i.op_str.split())[
+                -1
+            ] in ['0', 'x0', 'zero']:
                 count += 1
         return count
-
