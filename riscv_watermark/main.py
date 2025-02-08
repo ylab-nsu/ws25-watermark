@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 from elftools.elf.elffile import ELFFile
 from riscv_watermark.encoder import Encoder
 from riscv_watermark.decoder import Decoder
@@ -37,6 +38,11 @@ def main():
     methods = [fget_watermarker(x) for x in methods]
     if None in methods:
         logger.info('Unsupported method detected')
+        return
+    if args.get_nbits:
+        enc = Encoder(args.filename, methods, '')
+        nbits = enc.getnbits()
+        print(nbits) #пока не работает
         return
     if args.encode:
         encoder = Encoder(args.filename, methods, args.encode)

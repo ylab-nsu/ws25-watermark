@@ -53,3 +53,7 @@ class Encoder:
         else:
             logger.info('encoding failed')
             sys.exit()
+
+    def getnbits(self):
+        for watermarker in self.methods:
+            return watermarker.get_nbits(self.src_filename)
