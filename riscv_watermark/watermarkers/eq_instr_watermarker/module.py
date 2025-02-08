@@ -1,7 +1,10 @@
-from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import \
-    convert_add_addi
+from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import (
+    convert_add_addi,
+)
 from riscv_watermark.watermarkers.eq_instr_watermarker.dictionaries import (
-    nop_bits, nop_opcodes)
+    nop_bits,
+    nop_opcodes,
+)
 from riscv_watermark.watermarkers.interface import Watermarker
 
 """

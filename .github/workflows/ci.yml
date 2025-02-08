@@ -23,7 +23,7 @@ jobs:
         run: ruff check --output-format=github .
         
       - name: Run isort
-        run: isort . --check --diff
+        run: isort . --profile black --check --diff
         
       # Check blue formatting
       - name: Run blue
