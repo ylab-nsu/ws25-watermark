@@ -14,7 +14,7 @@ Watermark RISC-V
 
 Замены на функционально эквивалентные функции в контексте целой программы не вносят заметных изменений в скорость исполнения
 
-![image](https://imgur.com/a/rgNkBhf)
+![image](https://i.imgur.com/QVnxOlj.png)
 
 ## =============================
 Python tool to encode messages in risc-v compiled elf files
