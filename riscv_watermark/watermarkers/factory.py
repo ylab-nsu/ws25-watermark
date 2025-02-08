@@ -9,7 +9,7 @@ from riscv_watermark.watermarkers.stack_watermarker.module import (
 def fget_watermarker(name: str):
     if name == 'stack':
         return StackWatermarker()
-    if name == 'zerofier':
+    if name == 'equal_funcs':
         return EquivalentInstructionWatermarker()
 
     return None
