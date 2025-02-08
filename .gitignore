@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 # Created by venv; see https://docs.python.org/3/library/venv.html
 
-=======
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
@@ -191,4 +189,3 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
->>>>>>> 21c9a2ac4012de93484472e21935e7c977ddfeb3
