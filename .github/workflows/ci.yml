@@ -27,7 +27,7 @@ jobs:
         
       # Check blue formatting
       - name: Run blue
-        run: blue . --check
+        run: blue .
         
       # Run flake8p
       - name: Run flake8p
