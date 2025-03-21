@@ -111,7 +111,24 @@ def encode_message(filename: str, watermarkers: List[Watermarker], message: str)
 
 
 def decode_message(filename: str, watermarkers: List[Watermarker]) -> None:
-    pass
+    """
+    Decode a message from the binary file.
+    
+    :param filename: Path to the binary file
+    :type filename: str
+    :param watermarkers: List of watermarker instances
+    :type watermarkers: List[Watermarker]
+    """
+    try:
+        decoder = Decoder(filename, watermarkers)
+        decoded_message = decoder.decode().rstrip()
+        
+        print(f"Decoded message: {decoded_message}")
+        logger.info("Message successfully decoded")
+        
+    except Exception as e:
+        logger.error(f"Decoding failed: {e}")
+        sys.exit(1)
 
 
 def main() -> None:
