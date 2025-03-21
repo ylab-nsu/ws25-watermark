@@ -107,7 +107,47 @@ def validate_file(filename: str) -> None:
         sys.exit(1)
         
 def encode_message(filename: str, watermarkers: List[Watermarker], message: str) -> None:
-    pass
+    """
+    Encode a message in the binary file.
+    """
+    try:
+        encoder = Encoder(filename, watermarkers, message)
+        logger.info(f"Available bit capacity: {encoder.get_nbits()} bits")
+        
+        if not encoder.can_encode():
+            logger.error("Message too large for available capacity")
+            sys.exit(1)
+            
+        new_data = encoder.encode()
+        new_filename = f"{filename}.patched"
+        logger.info(f"Creating patched file: {new_filename}")
+        
+        try:
+            with open(filename, "rb") as source_file:
+                original_data = source_file.read()
+                source_file.seek(0)
+                elf_file = ELFFile(source_file)
+                text_section = elf_file.get_section_by_name(".text")
+                if not text_section:
+                    logger.error("Could not find .text section in ELF file")
+                    sys.exit(1)
+                    
+                text_addr = text_section["sh_addr"]
+                
+            with open(new_filename, "wb") as target_file:
+                target_file.write(original_data)
+                target_file.seek(text_addr)
+                target_file.write(new_data)
+                
+            logger.info(f"Message successfully encoded in {new_filename}")
+                
+        except IOError as e:
+            logger.error(f"File operation failed: {e}")
+            sys.exit(1)
+            
+    except Exception as e:
+        logger.error(f"Encoding failed: {e}")
+        sys.exit(1)
 
 
 def decode_message(filename: str, watermarkers: List[Watermarker]) -> None:
