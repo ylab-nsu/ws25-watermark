@@ -109,6 +109,13 @@ def validate_file(filename: str) -> None:
 def encode_message(filename: str, watermarkers: List[Watermarker], message: str) -> None:
     """
     Encode a message in the binary file.
+    
+    :param filename: Path to the binary file
+    :type filename: str
+    :param watermarkers: List of watermarker instances
+    :type watermarkers: List[Watermarker]
+    :param message: Message to encode
+    :type message: str
     """
     try:
         encoder = Encoder(filename, watermarkers, message)
