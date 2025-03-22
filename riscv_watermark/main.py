@@ -38,6 +38,7 @@ def parse_arguments() -> argparse.Namespace:
         action="store_true",
         help="Print amount of bits available to hide in binary",
     )
+    parser.add_argument("-o", "--output", type=str, help="Output file path (default: filename.patched)")
     parser.add_argument("filename", help="Path to the binary file")
     
     return parser.parse_args()
@@ -106,7 +107,7 @@ def validate_file(filename: str) -> None:
         logger.error(f"File not readable: {filename}")
         sys.exit(1)
         
-def encode_message(filename: str, watermarkers: List[Watermarker], message: str) -> None:
+def encode_message(filename: str, watermarkers: List[Watermarker], message: str, output_file: Optional[str] = None) -> None:
     """
     Encode a message in the binary file.
     
@@ -116,17 +117,20 @@ def encode_message(filename: str, watermarkers: List[Watermarker], message: str)
     :type watermarkers: List[Watermarker]
     :param message: Message to encode
     :type message: str
+    :param output_file: Path to the output file
+    :type output_file: Optional[str]
     """
     try:
         encoder = Encoder(filename, watermarkers, message)
         logger.info(f"Available bit capacity: {encoder.get_nbits()} bits")
+        logger.info(f"Message size: {len(message) * 8} bits")
         
         if not encoder.can_encode():
             logger.error("Message too large for available capacity")
             sys.exit(1)
             
         new_data = encoder.encode()
-        new_filename = f"{filename}.patched"
+        new_filename = output_file if output_file else f"{filename}.patched"
         logger.info(f"Creating patched file: {new_filename}")
         
         try:
@@ -198,7 +202,7 @@ def main() -> None:
         print(f"Maximum message length (approx): {bits // 8} characters")
         
     elif args.encode:
-        encode_message(args.filename, watermarkers, args.encode)
+        encode_message(args.filename, watermarkers, args.encode, args.output)
         
     elif args.decode:
         decode_message(args.filename, watermarkers)
