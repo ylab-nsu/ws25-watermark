@@ -66,8 +66,8 @@ class Encoder:
             bits_capacity = watermarker.get_nbits(self.__src_filename)
             bytes_capacity = bits_capacity // 8
             
-            char_list = list(self.__message)
-            msg_len = len(char_list)
+            message = self.__message
+            msg_len = len(message)
             
             if bytes_capacity < 1:
                 logger.info(f"Low amount of encodable bits: {bits_capacity}")
@@ -76,9 +76,9 @@ class Encoder:
                 logger.info("Not enough bits to encode the whole message")
                 
             if bytes_capacity > msg_len:
-                char_list.extend([" "] * (bytes_capacity - msg_len))
+                message += " " * (bytes_capacity - msg_len)
                 
-            new_data = watermarker.encode(self.__src_filename, char_list)
+            new_data = watermarker.encode(self.__src_filename, message)
         
         if new_data:
             return new_data
