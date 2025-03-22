@@ -50,25 +50,38 @@ class Encoder:
         return self.get_nbits() >= len(self.__message.encode("utf-8")) * 8
 
     def encode(self) -> bytes:
-        #        if not self.can_encode():
-        #            logger.info('Not enough size to encode')
-        #            raise NoSizeException('')
+        """
+        Encode the message into the binary using watermarking methods.
+        
+        Each watermarker in the list is applied in sequence. The last successful
+        result is returned.
+        
+        :return: Modified binary data containing the encoded message
+        :raises SystemExit: If encoding fails (all watermarkers return empty data)
+        """
+        
         new_data = b""
+        
         for watermarker in self.__methods:
-            number = watermarker.get_nbits(self.__src_filename)
-            number //= 8
-            c = list(self.__message)
-            msg_len = len(c)
-            if number < 1:
-                logger.info("low amount of codeable bits")
-            if number < msg_len:
+            bits_capacity = watermarker.get_nbits(self.__src_filename)
+            bytes_capacity = bits_capacity // 8
+            
+            char_list = list(self.__message)
+            msg_len = len(char_list)
+            
+            if bytes_capacity < 1:
+                logger.info(f"Low amount of encodable bits: {bits_capacity}")
+                
+            if bytes_capacity < msg_len:
                 logger.info("Not enough bits to encode the whole message")
-            if number > msg_len:
-                for i in range(number - msg_len):
-                    c.append(" ")  # пока так
-            new_data = watermarker.encode(self.__src_filename, c)
-        if new_data != b"":
+                
+            if bytes_capacity > msg_len:
+                char_list.extend([" "] * (bytes_capacity - msg_len))
+                
+            new_data = watermarker.encode(self.__src_filename, char_list)
+        
+        if new_data:
             return new_data
         else:
-            logger.info("encoding failed")
-            sys.exit()
+            logger.info("Encoding failed")
+            sys.exit(1)
