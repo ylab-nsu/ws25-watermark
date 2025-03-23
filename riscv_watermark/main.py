@@ -161,7 +161,7 @@ def encode_message(filename: str, watermarkers: List[Watermarker], message: str,
         sys.exit(1)
 
 
-def decode_message(filename: str, watermarkers: List[Watermarker]) -> None:
+def decode_message(filename: str, watermarkers: List[Watermarker]) -> str:
     """
     Decode a message from the binary file.
     
@@ -176,7 +176,7 @@ def decode_message(filename: str, watermarkers: List[Watermarker]) -> None:
         
         print(f"Decoded message: {decoded_message}")
         logger.info("Message successfully decoded")
-        
+        return decoded_message
     except Exception as e:
         logger.error(f"Decoding failed: {e}")
         sys.exit(1)
