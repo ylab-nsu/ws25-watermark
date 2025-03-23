@@ -2,6 +2,7 @@ import logging
 import sys
 
 from riscv_watermark.watermarkers.interface import Watermarker
+from riscv_watermark.exceptions import NoMethodsError, InsufficientCapacityError, EncodingError, NoSizeException
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +25,14 @@ class Encoder:
         :type methods: list[Watermarker]
         :param message: Message to encode
         :type message: str
+        :raises NoMethodsError: If no watermarking methods are provided
         """
         self.__src_filename = src_filename
         self.__methods = methods
         self.__message: str = message
+        
+        if not self.__methods:
+            raise NoMethodsError()
         
         self.available_bits_list = [
             watermarker.get_nbits(self.__src_filename) for watermarker in self.__methods
@@ -57,31 +62,53 @@ class Encoder:
         result is returned.
         
         :return: Modified binary data containing the encoded message
-        :raises SystemExit: If encoding fails (all watermarkers return empty data)
+        :raises InsufficientCapacityError: If there is not enough capacity to encode the message
+        :raises EncodingError: If all watermarking methods fail
         """
+        
+        if not self.can_encode():
+            msg_bits_needed = len(self.__message.encode("utf-8")) * 8
+            raise InsufficientCapacityError(
+                bits_available=self.get_nbits(),
+                bits_needed=msg_bits_needed
+            )
         
         new_data = b""
         
         for watermarker in self.__methods:
-            bits_capacity = watermarker.get_nbits(self.__src_filename)
-            bytes_capacity = bits_capacity // 8
-            
-            message = self.__message
-            msg_len = len(message)
-            
-            if bytes_capacity < 1:
-                logger.info(f"Low amount of encodable bits: {bits_capacity}")
+            try:
+                bits_capacity = watermarker.get_nbits(self.__src_filename)
+                bytes_capacity = bits_capacity // 8
                 
-            if bytes_capacity < msg_len:
-                logger.info("Not enough bits to encode the whole message")
+                message = self.__message
+                msg_len = len(message)
                 
-            if bytes_capacity > msg_len:
-                message += " " * (bytes_capacity - msg_len)
+                if bytes_capacity < 1:
+                    logger.warning(
+                        f"Skipping {watermarker.__class__.__name__}: "
+                        f"Low amount of encodable bits: {bits_capacity}"
+                    )
+                    continue
+                    
+                if bytes_capacity < msg_len:
+                    logger.warning(
+                        f"Message too large for watermarker: {msg_len} bytes needed, "
+                        f"but only {bytes_capacity} bytes available"
+                    )
+                    continue
+                else:
+                    message += " " * (bytes_capacity - msg_len)
                 
-            new_data = watermarker.encode(self.__src_filename, message)
+                new_data = watermarker.encode(self.__src_filename, message)
+                
+                if new_data:
+                    logger.info(
+                        f"Successfully encoded message using "
+                        f"{watermarker.__class__.__name__}"
+                    )
+                    return new_data
+            except Exception as e:
+                logger.warning(f"{watermarker.__class__.__name__} method failed: {str(e)}")
         
-        if new_data:
-            return new_data
-        else:
-            logger.info("Encoding failed")
-            sys.exit(1)
+        logger.error("All watermarking methods failed")
+        raise EncodingError("Failed to encode message with any available watermarking method")
