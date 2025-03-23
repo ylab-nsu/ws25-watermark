@@ -13,7 +13,7 @@ from riscv_watermark.watermarkers.interface import Watermarker
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -124,10 +124,6 @@ def encode_message(filename: str, watermarkers: List[Watermarker], message: str,
         encoder = Encoder(filename, watermarkers, message)
         logger.info(f"Available bit capacity: {encoder.get_nbits()} bits")
         logger.info(f"Message size: {len(message) * 8} bits")
-        
-        if not encoder.can_encode():
-            logger.error("Message too large for available capacity")
-            sys.exit(1)
             
         new_data = encoder.encode()
         new_filename = output_file if output_file else f"{filename}.patched"
