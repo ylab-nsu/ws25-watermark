@@ -13,7 +13,7 @@ riscv-watermark = "riscv_watermark.main:main"
 python = "^3.11"
 pyelftools = "^0.31"
 capstone = "^5.0.5"
-bitstruct = "^8.19.0"
+bitstruct = "^8.20.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.4"

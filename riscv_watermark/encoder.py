@@ -1,8 +1,7 @@
 import logging
-import sys
 
 from riscv_watermark.watermarkers.interface import Watermarker
-from riscv_watermark.exceptions import NoMethodsError, InsufficientCapacityError, EncodingError, NoSizeException
+from riscv_watermark.exceptions import NoMethodsError, InsufficientCapacityError, EncodingError
 
 logger = logging.getLogger(__name__)
 
