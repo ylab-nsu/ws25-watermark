@@ -11,17 +11,14 @@ from riscv_watermark.encoder import Encoder
 from riscv_watermark.watermarkers.factory import fget_watermarker, get_available_methods
 from riscv_watermark.watermarkers.interface import Watermarker
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
 def parse_arguments() -> argparse.Namespace:
     """
     Parse command line arguments.
-    
+
     :return: Parsed arguments
     :rtype: argparse.Namespace
     """
@@ -40,14 +37,14 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument("-o", "--output", type=str, help="Output file path (default: filename.patched)")
     parser.add_argument("filename", help="Path to the binary file")
-    
+
     return parser.parse_args()
 
 
 def get_watermarkers(methods_str: Optional[str]) -> List[Watermarker]:
     """
     Convert comma-separated method names to watermarker instances.
-    
+
     :param methods_str: Comma-separated string of method names
     :type methods_str: str
     :return: List of watermarker instances
@@ -55,24 +52,24 @@ def get_watermarkers(methods_str: Optional[str]) -> List[Watermarker]:
     if not methods_str:
         logger.error("No methods specified. Use -m/--methods to specify watermarking methods.")
         sys.exit(1)
-        
+
     methods = methods_str.split(",")
     watermarkers = [fget_watermarker(method) for method in methods]
-    
+
     if None in watermarkers:
         invalid_methods = [m for i, m in enumerate(methods) if watermarkers[i] is None]
         logger.error(f"Unsupported watermarking method(s): {', '.join(invalid_methods)}")
         available_methods = get_available_methods()
         logger.info(f"Available methods: {', '.join(available_methods)}")
         sys.exit(1)
-        
+
     return watermarkers
 
 
 def get_available_bits(filename: str, watermarkers: List[Watermarker]) -> int:
     """
     Calculate the number of bits available for hiding data.
-    
+
     :param filename: Path to the binary file
     :type filename: str
     :param watermarkers: List of watermarker instances
@@ -91,26 +88,29 @@ def get_available_bits(filename: str, watermarkers: List[Watermarker]) -> int:
 def validate_file(filename: str) -> None:
     """
     Validate that the file exists and is readable.
-    
+
     :param filename: Path to the file
     :type filename
     """
     if not os.path.exists(filename):
         logger.error(f"File not found: {filename}")
         sys.exit(1)
-        
+
     if not os.path.isfile(filename):
         logger.error(f"Not a file: {filename}")
         sys.exit(1)
-        
+
     if not os.access(filename, os.R_OK):
         logger.error(f"File not readable: {filename}")
         sys.exit(1)
-        
-def encode_message(filename: str, watermarkers: List[Watermarker], message: str, output_file: Optional[str] = None) -> None:
+
+
+def encode_message(
+    filename: str, watermarkers: List[Watermarker], message: str, output_file: Optional[str] = None
+) -> None:
     """
     Encode a message in the binary file.
-    
+
     :param filename: Path to the binary file
     :type filename: str
     :param watermarkers: List of watermarker instances
@@ -124,11 +124,11 @@ def encode_message(filename: str, watermarkers: List[Watermarker], message: str,
         encoder = Encoder(filename, watermarkers, message)
         logger.info(f"Available bit capacity: {encoder.get_nbits()} bits")
         logger.info(f"Message size: {len(message) * 8} bits")
-            
+
         new_data = encoder.encode()
         new_filename = output_file if output_file else f"{filename}.patched"
         logger.info(f"Creating patched file: {new_filename}")
-        
+
         try:
             with open(filename, "rb") as source_file:
                 original_data = source_file.read()
@@ -138,20 +138,20 @@ def encode_message(filename: str, watermarkers: List[Watermarker], message: str,
                 if not text_section:
                     logger.error("Could not find .text section in ELF file")
                     sys.exit(1)
-                    
+
                 text_addr = text_section["sh_addr"]
-                
+
             with open(new_filename, "wb") as target_file:
                 target_file.write(original_data)
                 target_file.seek(text_addr)
                 target_file.write(new_data)
-                
+
             logger.info(f"Message successfully encoded in {new_filename}")
-                
+
         except IOError as e:
             logger.error(f"File operation failed: {e}")
             sys.exit(1)
-            
+
     except Exception as e:
         logger.error(f"Encoding failed: {e}")
         sys.exit(1)
@@ -160,7 +160,7 @@ def encode_message(filename: str, watermarkers: List[Watermarker], message: str,
 def decode_message(filename: str, watermarkers: List[Watermarker]) -> str:
     """
     Decode a message from the binary file.
-    
+
     :param filename: Path to the binary file
     :type filename: str
     :param watermarkers: List of watermarker instances
@@ -169,7 +169,7 @@ def decode_message(filename: str, watermarkers: List[Watermarker]) -> str:
     try:
         decoder = Decoder(filename, watermarkers)
         decoded_message = decoder.decode().rstrip()
-        
+
         print(f"Decoded message: {decoded_message}")
         logger.info("Message successfully decoded")
         return decoded_message
@@ -183,26 +183,26 @@ def main() -> None:
     CLI entry point for the RISC-V Watermarker.
     """
     args = parse_arguments()
-    
+
     validate_file(args.filename)
-    
+
     if args.encode and args.decode:
         logger.error("Cannot encode and decode at the same time")
         sys.exit(1)
-        
+
     watermarkers = get_watermarkers(args.methods)
-    
+
     if args.get_nbits:
         bits = get_available_bits(args.filename, watermarkers)
         print(f"Available bits for watermarking: {bits}")
         print(f"Maximum message length (approx): {bits // 8} characters")
-        
+
     elif args.encode:
         encode_message(args.filename, watermarkers, args.encode, args.output)
-        
+
     elif args.decode:
         decode_message(args.filename, watermarkers)
-        
+
     else:
         logger.error("No operation specified. Use -e, -d, or -g")
         sys.exit(1)

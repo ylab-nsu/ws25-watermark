@@ -54,16 +54,9 @@ def get_addx0(data):
     rs2 = 0
     opcode3 = 0b0000000
 
-    instr = (
-        (opcode3 << 25)
-        | (rs2 << 20)
-        | (rs1 << 15)
-        | (opcode2 << 12)
-        | (rd << 7)
-        | opcode1
-    )
+    instr = (opcode3 << 25) | (rs2 << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
 
-    return instr.to_bytes(4, byteorder='little')
+    return instr.to_bytes(4, byteorder="little")
 
 
 def get_addi0(data):
@@ -75,4 +68,4 @@ def get_addi0(data):
 
     instr = (imm << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
 
-    return instr.to_bytes(4, byteorder='little')
+    return instr.to_bytes(4, byteorder="little")
