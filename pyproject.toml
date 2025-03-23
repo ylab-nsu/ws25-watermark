@@ -1,15 +1,10 @@
-readme = "README.md"
-
 [tool.poetry]
 name = "riscv_watermark"
 version = "0.0.1"
-description = "water"
-authors = [
-"MKSP"
-]
-packages = [
-    { include = "riscv_watermark"},
-]
+description = "A tool to watermark RISC-V binaries"
+authors = ["MKSP"]
+readme = "README.md"
+packages = [{ include = "riscv_watermark" }]
 
 [tool.poetry.scripts]
 riscv-watermark = "riscv_watermark.main:main"
@@ -22,6 +17,26 @@ bitstruct = "^8.19.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.4"
+isort = "^5.12.0"
+mypy = "^1.6.1"
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+output-format = "grouped"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
