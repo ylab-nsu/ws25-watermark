@@ -2,7 +2,7 @@ import argparse
 import logging
 import os
 import sys
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from elftools.elf.elffile import ELFFile
 
@@ -11,7 +11,9 @@ from riscv_watermark.encoder import Encoder
 from riscv_watermark.watermarkers.factory import fget_watermarker, get_available_methods
 from riscv_watermark.watermarkers.interface import Watermarker
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", datefmt="%M:%S"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -66,9 +68,10 @@ def get_watermarkers(methods_str: Optional[str]) -> List[Watermarker]:
     return watermarkers
 
 
-def get_available_bits(filename: str, watermarkers: List[Watermarker]) -> int:
+def get_available_bits(filename: str, watermarkers: List[Watermarker]) -> Dict[str, int]:
     """
-    Calculate the number of bits available for hiding data.
+    Logs the number of bits available for hiding data in the binary file for each watermarker.
+    Returns dictionary of watermarker names and available bits.
 
     :param filename: Path to the binary file
     :type filename: str
@@ -79,7 +82,9 @@ def get_available_bits(filename: str, watermarkers: List[Watermarker]) -> int:
     """
     try:
         encoder = Encoder(filename, watermarkers, "")
-        return encoder.get_nbits()
+        for watermarker_name, capacity in encoder.capacities.items():
+            logger.info(f"Available bits for {watermarker_name}: {capacity} ({capacity // 8} characters)")
+        return encoder.capacities
     except Exception as e:
         logger.error(f"Error calculating available bits: {e}")
         sys.exit(1)
@@ -122,7 +127,7 @@ def encode_message(
     """
     try:
         encoder = Encoder(filename, watermarkers, message)
-        logger.info(f"Available bit capacity: {encoder.get_nbits()} bits")
+        logger.info(f"Available max bit capacity: {encoder.max_capacity} bits")
         logger.info(f"Message size: {len(message) * 8} bits")
 
         new_data = encoder.encode()
@@ -193,9 +198,7 @@ def main() -> None:
     watermarkers = get_watermarkers(args.methods)
 
     if args.get_nbits:
-        bits = get_available_bits(args.filename, watermarkers)
-        print(f"Available bits for watermarking: {bits}")
-        print(f"Maximum message length (approx): {bits // 8} characters")
+        get_available_bits(args.filename, watermarkers)
 
     elif args.encode:
         encode_message(args.filename, watermarkers, args.encode, args.output)

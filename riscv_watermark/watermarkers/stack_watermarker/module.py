@@ -9,4 +9,4 @@ class StackWatermarker(Watermarker):
         pass
 
     def get_nbits(self, text_data):
-        pass
+        return 0

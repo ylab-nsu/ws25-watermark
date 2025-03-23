@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, Optional
 
 from riscv_watermark.exceptions import EncodingError, InsufficientCapacityError, NoMethodsError
 from riscv_watermark.watermarkers.interface import Watermarker
@@ -33,25 +34,31 @@ class Encoder:
         if not self.__methods:
             raise NoMethodsError()
 
-        self.available_bits_list = [
-            watermarker.get_nbits(self.__src_filename) for watermarker in self.__methods
-        ]
+        self.capacities: Dict[str, int] = {}
+        for watermarker in self.__methods:
+            method_name = watermarker.__class__.__name__
+            bits = watermarker.get_nbits(self.__src_filename)
+            self.capacities[method_name] = bits
+        self.max_capacity = max(self.capacities.values())
 
-    def get_nbits(self) -> int:
+    def can_encode(self, method_name: Optional[str] = None) -> bool:
         """
-        Get the total number of bits available for encoding across all methods.
+        Check if the message can fit in the available capacity. By default, the
+        maximum capacity of all watermarking methods is checked.
 
-        :return: Total number of bits available for encoding
-        """
-        return sum(self.available_bits_list)
-
-    def can_encode(self) -> bool:
-        """
-        Check if the message can fit in the available capacity.
-
+        :param method_name: Optional name of specific method to check
+        :type method_name: Optional[str]
         :return: True if the message can be encoded, False otherwise
         """
-        return self.get_nbits() >= len(self.__message.encode("utf-8")) * 8
+        message_bits = len(self.__message.encode("utf-8")) * 8
+
+        if method_name is not None:
+            return self.capacities.get(method_name, 0) >= message_bits
+
+        if not self.capacities:
+            return False
+
+        return self.max_capacity >= message_bits
 
     def encode(self) -> bytes:
         """
@@ -67,33 +74,32 @@ class Encoder:
 
         if not self.can_encode():
             msg_bits_needed = len(self.__message.encode("utf-8")) * 8
-            raise InsufficientCapacityError(bits_available=self.get_nbits(), bits_needed=msg_bits_needed)
+            raise InsufficientCapacityError(bits_available=self.max_capacity, bits_needed=msg_bits_needed)
 
         new_data = b""
 
         for watermarker in self.__methods:
             try:
                 bits_capacity = watermarker.get_nbits(self.__src_filename)
-                bytes_capacity = bits_capacity // 8
 
                 message = self.__message
                 msg_len = len(message)
 
-                if bytes_capacity < 1:
+                if bits_capacity * 8 < 1:
                     logger.warning(
                         f"Skipping {watermarker.__class__.__name__}: "
                         f"Low amount of encodable bits: {bits_capacity}"
                     )
                     continue
 
-                if bytes_capacity < msg_len:
+                if bits_capacity < msg_len * 8:
                     logger.warning(
                         f"Message too large for watermarker: {msg_len} bytes needed, "
-                        f"but only {bytes_capacity} bytes available"
+                        f"but only {bits_capacity * 8} bytes available"
                     )
                     continue
                 else:
-                    message += " " * (bytes_capacity - msg_len)
+                    message += " " * (bits_capacity * 8 - msg_len)
 
                 new_data = watermarker.encode(self.__src_filename, message)
 

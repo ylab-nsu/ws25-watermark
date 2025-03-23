@@ -6,13 +6,6 @@ class WatermarkError(Exception):
         super().__init__(self.message)
 
 
-class NoSizeException(WatermarkError):
-    """Raised when there's insufficient space to encode."""
-
-    def __init__(self, message="Not enough space to encode the message"):
-        super().__init__(message)
-
-
 class EncodingError(WatermarkError):
     """Raised when the encoding process fails."""
 
