@@ -1,11 +1,9 @@
-import logging
 import os
-
 import pytest
-
-from riscv_watermark.main import decode_message, encode_message
-from riscv_watermark.utils import calculate_file_hash
+import logging
+from riscv_watermark.main import encode_message, decode_message
 from riscv_watermark.watermarkers.factory import fget_watermarker
+from riscv_watermark.utils import calculate_file_hash
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -18,14 +16,11 @@ logger.addHandler(console_handler)
 
 SECRET_MESSAGE = "This file has been signed with ws25-watermark"
 
+@pytest.mark.parametrize("filepath", [
+    "../../example_bins/sqlite3.elf",
+    "../../example_bins/example.elf",
+])
 
-@pytest.mark.parametrize(
-    "filepath",
-    [
-        "../../example_bins/sqlite3.elf",
-        "../../example_bins/example.elf",
-    ],
-)
 def test_encode_decode_message(filepath):
     directory = os.path.dirname(filepath)
     basic_filepath = os.path.splitext(filepath)[0]
@@ -52,9 +47,9 @@ def test_encode_decode_message(filepath):
 
         logger.info(f"Decoding message from file: {patched_filepath}")
         decoded_message = decode_message(patched_filepath, [watermarker])
-        decoded_message = decoded_message.rstrip("\x00")
+        decoded_message = decoded_message.rstrip('\x00')
 
-        assert decoded_message == truncated_message, f"Decoded message doesn't match: {decoded_message}"
+        assert decoded_message == truncated_message, f"Decoded message doesn't match expected: {decoded_message}"
 
     except Exception as e:
         pytest.fail(f"Test failed due to error: {e}")
