@@ -177,7 +177,7 @@ def decode_message(filename: str, watermarkers: List[Watermarker]) -> Dict[str, 
     try:
         decoder = Decoder(filename, watermarkers)
         decoded_dict = decoder.decode()
-        
+
         if len(decoded_dict) == 1:
             decoded_message = decoded_dict.popitem()[1]
             print(f"Decoded message: {decoded_message}")
