@@ -6,7 +6,7 @@ class StackWatermarker(Watermarker):
         pass
 
     def decode(self, text_data):
-        pass
+        return None
 
     def get_nbits(self, text_data):
         return 0

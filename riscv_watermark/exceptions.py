@@ -12,13 +12,11 @@ class EncodingError(WatermarkError):
     def __init__(self, message="Failed to encode the message"):
         super().__init__(message)
 
+class DecodingError(WatermarkError):
+    """Raised when the decoding process fails."""
 
-class NoMethodsError(WatermarkError):
-    """Raised when no watermarking methods are provided."""
-
-    def __init__(self, message="No watermarking methods specified"):
+    def __init__(self, message="Failed to decode the message"):
         super().__init__(message)
-
 
 class InsufficientCapacityError(WatermarkError):
     """Raised when there's not enough capacity to encode the full message."""

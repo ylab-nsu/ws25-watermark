@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Optional
 
-from riscv_watermark.exceptions import EncodingError, InsufficientCapacityError, NoMethodsError
+from riscv_watermark.exceptions import EncodingError, InsufficientCapacityError
 from riscv_watermark.watermarkers.interface import Watermarker
 
 logger = logging.getLogger(__name__)
@@ -30,9 +30,6 @@ class Encoder:
         self.__src_filename = src_filename
         self.__methods = methods
         self.__message: str = message
-
-        if not self.__methods:
-            raise NoMethodsError()
 
         self.capacities: Dict[str, int] = {}
         for watermarker in self.__methods:

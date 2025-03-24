@@ -162,22 +162,30 @@ def encode_message(
         sys.exit(1)
 
 
-def decode_message(filename: str, watermarkers: List[Watermarker]) -> str:
+def decode_message(filename: str, watermarkers: List[Watermarker]) -> Dict[str, str]:
     """
     Decode a message from the binary file.
+    If multiple methods are used, the message from each method is returned as a dictionary.
 
     :param filename: Path to the binary file
     :type filename: str
     :param watermarkers: List of watermarker instances
     :type watermarkers: List[Watermarker]
+    :return Dictionary of method names and decoded messages
+    :rtype Dict[str, str]
     """
     try:
         decoder = Decoder(filename, watermarkers)
-        decoded_message = decoder.decode().rstrip()
-
-        print(f"Decoded message: {decoded_message}")
+        decoded_dict = decoder.decode()
+        
+        if len(decoded_dict) == 1:
+            decoded_message = decoded_dict.popitem()[1]
+            print(f"Decoded message: {decoded_message}")
+        else:
+            for method, message in decoded_dict.items():
+                print(f"Decoded message from {method}: {message}")
         logger.info("Message successfully decoded")
-        return decoded_message
+        return decoded_dict
     except Exception as e:
         logger.error(f"Decoding failed: {e}")
         sys.exit(1)
