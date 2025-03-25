@@ -1,0 +1,26 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    name: Check with linters
+    permissions: 
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      - name: Run Lint Check
+        run: poetry run make check

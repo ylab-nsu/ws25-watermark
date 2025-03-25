@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "riscv_watermark"
+version = "0.0.1"
+description = "A tool to watermark RISC-V binaries"
+authors = ["MKSP"]
+readme = "README.md"
+packages = [{ include = "riscv_watermark" }]
+
+[tool.poetry.scripts]
+riscv-watermark = "riscv_watermark.main:main"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyelftools = "^0.31"
+capstone = "^5.0.5"
+bitstruct = "^8.20.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.9.4"
+isort = "^5.12.0"
+mypy = "^1.6.1"
+pytest = "^6.2.5"
+
+[tool.isort]
+profile = "black"
+line_length = 110
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+output-format = "grouped"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
