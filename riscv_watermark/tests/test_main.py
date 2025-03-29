@@ -51,8 +51,9 @@ def test_encode_decode_message(filepath):
             logger.info("File has not been modified.")
 
         logger.info(f"Decoding message from file: {patched_filepath}")
-        decoded_message = decode_message(patched_filepath, [watermarker])
-        decoded_message = decoded_message.rstrip("\x00")
+        decoded_dict = decode_message(patched_filepath, [watermarker])
+
+        decoded_message = list(decoded_dict.values())[0].rstrip("\x00")
 
         assert decoded_message == truncated_message, f"Decoded message doesn't match: {decoded_message}"
 
