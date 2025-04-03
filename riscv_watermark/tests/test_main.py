@@ -33,7 +33,9 @@ def test_encode_decode_message(filepath):
 
     directory = os.path.dirname(filepath)
     basic_filepath = os.path.splitext(filepath)[0]
-    patched_filepath = os.path.join(directory, f"{os.path.basename(basic_filepath)}.patched")
+    patched_filepath = os.path.join(
+        directory, f"{os.path.basename(basic_filepath)}.patched"
+    )
 
     watermarker = fget_watermarker("equal_funcs")
 
@@ -64,7 +66,9 @@ def test_encode_decode_message(filepath):
 
         decoded_message = next(iter(decoded_dict.values()), "").rstrip("\x00")
 
-        assert decoded_message == truncated_message, f"Decoded message doesn't match: '{decoded_message}'"
+        assert decoded_message == truncated_message, (
+            f"Decoded message doesn't match: '{decoded_message}'"
+        )
     except Exception as e:
         pytest.fail(f"Test failed due to error: {e}")
     finally:
@@ -86,9 +90,13 @@ def test_get_available_bits(filepath):
         available_bits = get_available_bits(filepath, [watermarker])
 
         for watermarker_name, capacity in available_bits.items():
-            logger.info(f"Available bits for {watermarker_name}: {capacity} ({capacity // 8} characters)")
+            logger.info(
+                f"Available bits for {watermarker_name}: {capacity} ({capacity // 8} characters)"
+            )
 
-        assert all(capacity > 0 for capacity in available_bits.values()), "No available bits for watermarking."
+        assert all(capacity > 0 for capacity in available_bits.values()), (
+            "No available bits for watermarking."
+        )
 
         logger.info(f"Test passed for get_available_bits with file: {filepath}")
     except Exception as e:
