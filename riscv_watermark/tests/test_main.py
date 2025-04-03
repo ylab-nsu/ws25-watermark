@@ -27,8 +27,8 @@ SECRET_MESSAGE = "This file has been signed with ws25-watermark"
 @pytest.mark.parametrize(
     "filepath",
     [
-        "../../example_bins/sqlite3.elf",
-        "../../example_bins/example.elf",
+        "example_bins/sqlite3.elf",
+        "example_bins/example.elf",
     ],
 )
 def test_encode_decode_message(filepath):
