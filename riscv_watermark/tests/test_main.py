@@ -79,8 +79,8 @@ def test_encode_decode_message(filepath):
 @pytest.mark.parametrize(
     "filepath",
     [
-        "../../example_bins/sqlite3.elf",
-        "../../example_bins/example.elf",
+        "example_bins/sqlite3.elf",
+        "example_bins/example.elf",
     ],
 )
 def test_get_available_bits(filepath):
