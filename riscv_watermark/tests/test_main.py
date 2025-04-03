@@ -24,13 +24,10 @@ logger.addHandler(console_handler)
 SECRET_MESSAGE = "This file has been signed with ws25-watermark"
 
 
-@pytest.mark.parametrize(
-    "filepath",
-    [
-        "../../example_bins/sqlite3.elf",
-        "../../example_bins/example.elf",
-    ],
-)
+@pytest.mark.parametrize("filepath", [
+    "../../example_bins/sqlite3.elf",
+    "../../example_bins/example.elf",
+])
 def test_encode_decode_message(filepath):
     validate_file(filepath)
 
@@ -75,46 +72,51 @@ def test_encode_decode_message(filepath):
             os.remove(patched_filepath)
             logger.info(f"Removed patched file: {patched_filepath}")
 
-@pytest.mark.parametrize(
-    "filepath",
-    [
-        "../../example_bins/sqlite3.elf",
-        "../../example_bins/example.elf",
-    ],
-)
 
+@pytest.mark.parametrize("filepath", [
+    "../../example_bins/sqlite3.elf",
+    "../../example_bins/example.elf",
+])
 def test_get_available_bits(filepath):
     logger.info(f"Starting test for get_available_bits with file: {filepath}")
 
     try:
         validate_file(filepath)
-
         watermarker = fget_watermarker("equal_funcs")
-
         available_bits = get_available_bits(filepath, [watermarker])
 
         for watermarker_name, capacity in available_bits.items():
             logger.info(f"Available bits for {watermarker_name}: {capacity} ({capacity // 8} characters)")
 
-        assert all(capacity > 0 for capacity in available_bits.values()), \
-            "No available bits for watermarking."
+        assert all(capacity > 0 for capacity in available_bits.values()), "No available bits for watermarking."
 
         logger.info(f"Test passed for get_available_bits with file: {filepath}")
-
     except Exception as e:
         pytest.fail(f"Test failed due to error: {e}")
 
 
 def test_parse_arguments(monkeypatch):
-    monkeypatch.setattr('sys.argv',
-                        ['riscv-watermark', '-e', 'Hello', '-m', 'method_name', '-d', '-g', '-o',
-                         'output.txt', 'elf_file'])
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "riscv-watermark",
+            "-e",
+            "Hello",
+            "-m",
+            "method_name",
+            "-d",
+            "-g",
+            "-o",
+            "output.txt",
+            "elf_file",
+        ],
+    )
 
     args = parse_arguments()
 
-    assert args.encode == 'Hello'
-    assert args.methods == 'method_name'
+    assert args.encode == "Hello"
+    assert args.methods == "method_name"
     assert args.decode is True
     assert args.get_nbits is True
-    assert args.output == 'output.txt'
-    assert args.filename == 'elf_file'
+    assert args.output == "output.txt"
+    assert args.filename == "elf_file"
