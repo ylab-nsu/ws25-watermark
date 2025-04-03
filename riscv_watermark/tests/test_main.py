@@ -3,8 +3,13 @@ import os
 
 import pytest
 
-from riscv_watermark.main import decode_message, encode_message, parse_arguments, get_available_bits, \
-    validate_file
+from riscv_watermark.main import (
+    decode_message,
+    encode_message,
+    get_available_bits,
+    parse_arguments,
+    validate_file,
+)
 from riscv_watermark.utils import calculate_file_hash
 from riscv_watermark.watermarkers.factory import fget_watermarker
 
@@ -91,7 +96,8 @@ def test_get_available_bits(filepath):
         for watermarker_name, capacity in available_bits.items():
             logger.info(f"Available bits for {watermarker_name}: {capacity} ({capacity // 8} characters)")
 
-        assert all(capacity > 0 for capacity in available_bits.values()), "No available bits for watermarking."
+        assert all(capacity > 0 for capacity in available_bits.values()), \
+            "No available bits for watermarking."
 
         logger.info(f"Test passed for get_available_bits with file: {filepath}")
 
@@ -101,7 +107,8 @@ def test_get_available_bits(filepath):
 
 def test_parse_arguments(monkeypatch):
     monkeypatch.setattr('sys.argv',
-                        ['riscv-watermark', '-e', 'Hello', '-m', 'method_name', '-d', '-g', '-o', 'output.txt', 'elf_file'])
+                        ['riscv-watermark', '-e', 'Hello', '-m', 'method_name', '-d', '-g', '-o',
+                         'output.txt', 'elf_file'])
 
     args = parse_arguments()
 
