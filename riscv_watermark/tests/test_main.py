@@ -60,11 +60,8 @@ def test_encode_decode_message(filepath):
         decoded_message = next(iter(decoded_dict.values()), "").rstrip("\x00")
 
         assert decoded_message == truncated_message, f"Decoded message doesn't match: '{decoded_message}'"
-
-
     except Exception as e:
         pytest.fail(f"Test failed due to error: {e}")
-
     finally:
         if os.path.exists(patched_filepath):
             os.remove(patched_filepath)
