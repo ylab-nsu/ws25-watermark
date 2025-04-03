@@ -11,7 +11,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 console_handler = logging.StreamHandler()
-
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
@@ -51,11 +50,17 @@ def test_encode_decode_message(filepath):
             logger.info("File has not been modified.")
 
         logger.info(f"Decoding message from file: {patched_filepath}")
+
         decoded_dict = decode_message(patched_filepath, [watermarker])
 
-        decoded_message = list(decoded_dict.values())[0].rstrip("\x00")
+        if not decoded_dict:
+            logger.error(f"Decoded message dictionary is empty: {decoded_dict}")
+            pytest.fail("Decoding failed: No message returned.")
 
-        assert decoded_message == truncated_message, f"Decoded message doesn't match: {decoded_message}"
+        decoded_message = next(iter(decoded_dict.values()), "").rstrip("\x00")
+
+        assert decoded_message == truncated_message, f"Decoded message doesn't match: '{decoded_message}'"
+
 
     except Exception as e:
         pytest.fail(f"Test failed due to error: {e}")
