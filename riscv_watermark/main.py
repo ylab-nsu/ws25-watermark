@@ -179,16 +179,18 @@ def decode_message(filename: str, watermarkers: List[Watermarker]) -> Dict[str, 
         decoded_dict = decoder.decode()
 
         if len(decoded_dict) == 1:
-            decoded_message = decoded_dict.popitem()[1]
+            decoded_message = next(iter(decoded_dict.values()))
             print(f"Decoded message: {decoded_message}")
         else:
             for method, message in decoded_dict.items():
                 print(f"Decoded message from {method}: {message}")
+
         logger.info("Message successfully decoded")
         return decoded_dict
+
     except Exception as e:
         logger.error(f"Decoding failed: {e}")
-        sys.exit(1)
+        raise RuntimeError(f"Decoding failed: {e}")
 
 
 def main() -> None:
