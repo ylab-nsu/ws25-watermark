@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from riscv_watermark.exceptions import DecodingError
+from riscv_watermark.exceptions import WatermarkError
 from riscv_watermark.watermarkers.interface import Watermarker
 
 logger = logging.getLogger(__name__)
@@ -24,27 +24,17 @@ class Decoder:
         :return: Dictionary of method names and decoded messages
         :rtype: Dict[str, str]
         """
-        res = {}
-
-        if len(self.__methods) == 1:
+        results: Dict[str, str] = {}
+        for wm in self.__methods:
+            name = wm.__class__.__name__
             try:
-                decoded = self.__methods[0].decode(self.__patched_filename)
-                if decoded is None:
-                    raise DecodingError("Method is not implemented")
-                res[self.__methods[0].__class__.__name__] = decoded.rstrip()
-            except Exception as e:
-                logger.error(f"{self.__methods[0].__class__.__name__} failed: {e}")
-        else:
-            for watermarker in self.__methods:
-                try:
-                    decoded = watermarker.decode(self.__patched_filename)
-                    if decoded is None:
-                        raise DecodingError("Method is not implemented")
-                    res[watermarker.__class__.__name__] = decoded.rstrip()
-                except Exception as e:
-                    logger.warning(f"{watermarker.__class__.__name__} failed: {e}")
-                    continue
-        if not res:
-            raise DecodingError("Failed to decode with all methods")
-        else:
-            return res
+                decoded = wm.decode(self.__patched_filename)
+                results[name] = decoded.rstrip()
+            except WatermarkError as e:
+                logger.warning(f"{name} failed: {e}")
+            except Exception:
+                logger.exception(f"Unexpected error in {name}")
+
+        if not results:
+            raise WatermarkError("Failed to decode with any watermarking method")
+        return results
