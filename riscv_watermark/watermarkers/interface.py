@@ -11,23 +11,18 @@ class Watermarker(ABC):
 
     @abstractmethod
     def encode(self, filename: str, message) -> bytes:
+        """Encode message into file. Must be implemented by subclass."""
         pass
-
-    """
-    Gets message using selected method
-    """
 
     @abstractmethod
     def decode(self, filename: str) -> str:
+        """Decode message from file. Must be implemented by subclass."""
         pass
-
-    """
-    Returns amount of bits available to encode using selected method
-    """
 
     @abstractmethod
     def get_nbits(self, filename: str) -> int:
-        return 0
+        """Return number of bits available. Must be implemented by subclass."""
+        pass
 
     def disassembly(self, filename: str):
         with open(filename, "rb") as f:
