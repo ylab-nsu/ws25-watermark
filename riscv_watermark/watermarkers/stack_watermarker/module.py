@@ -1,5 +1,3 @@
-from riscv_watermark.watermarkers.interface import Watermarker
-
 # stack_watermarker removed; production-ready implementations only
 
 # class StackWatermarker(Watermarker):

@@ -1,8 +1,9 @@
 from riscv_watermark.watermarkers.eq_instr_watermarker.module import EquivalentInstructionWatermarker
+
 # from riscv_watermark.watermarkers.stack_watermarker.module import StackWatermarker
 
 _WATERMARKERS = {
-#    "stack": StackWatermarker,
+    #    "stack": StackWatermarker,
     "equal_funcs": EquivalentInstructionWatermarker,
 }
 

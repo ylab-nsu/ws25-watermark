@@ -2,15 +2,15 @@ import argparse
 import logging
 import os
 import sys
-from typing import cast, Dict, List, Optional
+from typing import Dict, List, Optional, cast
 
 from elftools.elf.elffile import ELFFile
 
 from riscv_watermark.decoder import Decoder
 from riscv_watermark.encoder import Encoder
+from riscv_watermark.exceptions import WatermarkError
 from riscv_watermark.watermarkers.factory import fget_watermarker, get_available_methods
 from riscv_watermark.watermarkers.interface import Watermarker
-from riscv_watermark.exceptions import WatermarkError
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", datefmt="%M:%S"

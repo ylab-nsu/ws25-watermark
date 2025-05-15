@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, List
+from typing import Dict, List, Optional
 
 from riscv_watermark.exceptions import WatermarkError
 from riscv_watermark.watermarkers.interface import Watermarker
@@ -13,7 +13,7 @@ class Encoder:
 
     This class coordinates the watermarking process using one or more watermarking
     methods to encode hidden messages into binary files.
-    
+
     capacities: Dictionary of watermarking methods and their respective capacities.
     max_capacity: Maximum capacity of all watermarking methods.
     """
@@ -78,7 +78,9 @@ class Encoder:
         """
         if not self.can_encode():
             bits_needed = len(self.__message.encode("utf-8")) * 8
-            raise WatermarkError(f"Insufficient capacity: {self.max_capacity} bits available, but {bits_needed} needed")
+            raise WatermarkError(
+                f"Insufficient capacity: {self.max_capacity} bits available, but {bits_needed} needed"
+            )
 
         for wm in self.__methods:
             name = wm.__class__.__name__
