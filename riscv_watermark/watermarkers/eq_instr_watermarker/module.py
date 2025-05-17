@@ -1,12 +1,14 @@
 from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import convert_add_addi
 from riscv_watermark.watermarkers.eq_instr_watermarker.dictionaries import nop_bits, nop_opcodes
 from riscv_watermark.watermarkers.interface import Watermarker
+import logging
 
 """
 Sample watermark example that just sets
 "add","addi", "c.add", "c.addi" to zeros
 """
 
+logger = logging.getLogger(__name__)
 
 def decode_bitstring(bs):
     # Split the bit string into chunks of 8 bits (1 byte)
@@ -64,38 +66,61 @@ class EquivalentInstructionWatermarker(Watermarker):
         bslen = len(bitstr)
         tracker = 0
         listing = super().disassembly(filename)
+        
+        # Добавил логирование для ls.elf, посмотреть почему валится
+        if "ls.elf" in filename:
+            logger.info(f"Processing ls.elf with message bits: {bitstr}")
+            logger.info(f"Total bits to encode: {bslen}")
+        
         for i in listing:
             orig_opcode = i.bytes.hex()
             if tracker < bslen:
-                # the demo uses all available bits, but
-                # really it can be any amount, so we
-                # should modify until the message is coded
+                # Логирование для ls.elf
+                if "ls.elf" in filename:
+                    logger.info(f"Instruction: {i.mnemonic} {i.op_str}")
+                    logger.info(f"Original opcode: {orig_opcode}")
+                    logger.info(f"Current bit position: {tracker}")
+                
                 if (i.mnemonic == "addi" or i.mnemonic == "add") and list(i.op_str.split())[-1] in [
                     "0",
                     "x0",
                     "zero",
                 ]:
+                    if "ls.elf" in filename:
+                        logger.info(f"Found modifiable instruction: {i.mnemonic} {i.op_str}")
+                    
                     if (bitstr[tracker] == "1" and i.mnemonic == "add") or (
                         bitstr[tracker] == "0" and i.mnemonic == "addi"
                     ):  # addi = 1; add = 0
                         opcode = orig_opcode
                         converted = convert_add_addi(int.from_bytes(bytearray.fromhex(opcode)))
                         if converted is not None:
+                            if "ls.elf" in filename:
+                                logger.info(f"Successfully converted instruction to: {converted.hex()}")
                             out = str(converted)
                             opcodes += out
                         else:
+                            if "ls.elf" in filename:
+                                logger.info("Conversion failed, keeping original instruction")
                             out = orig_opcode
                             opcodes += out
                     else:
+                        if "ls.elf" in filename:
+                            logger.info("No conversion needed, keeping original instruction")
                         out = orig_opcode
                         opcodes += out
                     tracker += 1
                 elif i.mnemonic == "c.nop":
+                    if "ls.elf" in filename:
+                        logger.info(f"Processing NOP instruction at bit position {tracker}")
+                    
                     if bslen - tracker > 1:
                         new_mnem = nop_bits[str(bitstr[tracker : tracker + 2])]
                     else:
                         new_mnem = nop_bits[str(bitstr[tracker : tracker + 1]) + "0"]
                     opcode = nop_opcodes[new_mnem]
+                    if "ls.elf" in filename:
+                        logger.info(f"Converted NOP to: {new_mnem} with opcode {opcode}")
                     opcodes += opcode
                     tracker += 2
                 else:
@@ -104,6 +129,11 @@ class EquivalentInstructionWatermarker(Watermarker):
             else:
                 out = str(i)[str(i).find("[") + 1 : str(i).find("]")]
                 opcodes += out
+        
+        if "ls.elf" in filename:
+            logger.info(f"Final opcodes length: {len(opcodes)}")
+            logger.info(f"Total bits encoded: {tracker}")
+        
         return bytearray.fromhex(opcodes)
 
     def decode(self, filename):

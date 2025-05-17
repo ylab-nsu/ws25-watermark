@@ -145,6 +145,9 @@ def encode_message(
                     sys.exit(1)
 
                 text_offset = text_section["sh_offset"]
+                logger.info(f"Text section offset: {text_offset}")
+                logger.info(f"Text section size: {text_section['sh_size']}")
+                logger.info(f"New data size: {len(new_data)}")
 
             with open(new_filename, "wb") as target_file:
                 target_file.write(original_data)
