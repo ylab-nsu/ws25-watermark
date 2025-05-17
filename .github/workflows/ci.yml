@@ -24,6 +24,8 @@ jobs:
         run: poetry install --no-interaction
       - name: Run Lint Check
         run: poetry run make check
+      - name: Run Tests
+        run: poetry run pytest riscv_watermark/tests/test_main.py
       - name: Install QEMU and RISC-V libraries
         run: |
           sudo apt-get update
