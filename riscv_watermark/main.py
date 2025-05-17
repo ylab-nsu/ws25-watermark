@@ -144,7 +144,7 @@ def encode_message(
                     logger.error("Could not find .text section in ELF file")
                     sys.exit(1)
 
-                text_addr = text_section["sh_addr"]
+                text_addr = text_section["sh_offset"]
 
             with open(new_filename, "wb") as target_file:
                 target_file.write(original_data)
