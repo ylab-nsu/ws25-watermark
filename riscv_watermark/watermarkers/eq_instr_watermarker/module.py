@@ -1,7 +1,8 @@
+import logging
+
 from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import convert_add_addi
 from riscv_watermark.watermarkers.eq_instr_watermarker.dictionaries import nop_bits, nop_opcodes
 from riscv_watermark.watermarkers.interface import Watermarker
-import logging
 
 """
 Sample watermark example that just sets
@@ -9,6 +10,7 @@ Sample watermark example that just sets
 """
 
 logger = logging.getLogger(__name__)
+
 
 def decode_bitstring(bs):
     # Split the bit string into chunks of 8 bits (1 byte)
@@ -66,12 +68,12 @@ class EquivalentInstructionWatermarker(Watermarker):
         bslen = len(bitstr)
         tracker = 0
         listing = super().disassembly(filename)
-        
+
         # Добавил логирование для ls.elf, посмотреть почему валится
         if "ls.elf" in filename:
             logger.info(f"Processing ls.elf with message bits: {bitstr}")
             logger.info(f"Total bits to encode: {bslen}")
-        
+
         for i in listing:
             orig_opcode = i.bytes.hex()
             if tracker < bslen:
@@ -80,7 +82,7 @@ class EquivalentInstructionWatermarker(Watermarker):
                     logger.info(f"Instruction: {i.mnemonic} {i.op_str}")
                     logger.info(f"Original opcode: {orig_opcode}")
                     logger.info(f"Current bit position: {tracker}")
-                
+
                 if (i.mnemonic == "addi" or i.mnemonic == "add") and list(i.op_str.split())[-1] in [
                     "0",
                     "x0",
@@ -88,7 +90,7 @@ class EquivalentInstructionWatermarker(Watermarker):
                 ]:
                     if "ls.elf" in filename:
                         logger.info(f"Found modifiable instruction: {i.mnemonic} {i.op_str}")
-                    
+
                     if (bitstr[tracker] == "1" and i.mnemonic == "add") or (
                         bitstr[tracker] == "0" and i.mnemonic == "addi"
                     ):  # addi = 1; add = 0
@@ -113,7 +115,7 @@ class EquivalentInstructionWatermarker(Watermarker):
                 elif i.mnemonic == "c.nop":
                     if "ls.elf" in filename:
                         logger.info(f"Processing NOP instruction at bit position {tracker}")
-                    
+
                     if bslen - tracker > 1:
                         new_mnem = nop_bits[str(bitstr[tracker : tracker + 2])]
                     else:
@@ -129,11 +131,11 @@ class EquivalentInstructionWatermarker(Watermarker):
             else:
                 out = str(i)[str(i).find("[") + 1 : str(i).find("]")]
                 opcodes += out
-        
+
         if "ls.elf" in filename:
             logger.info(f"Final opcodes length: {len(opcodes)}")
             logger.info(f"Total bits encoded: {tracker}")
-        
+
         return bytearray.fromhex(opcodes)
 
     def decode(self, filename):
