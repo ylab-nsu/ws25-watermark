@@ -77,7 +77,7 @@ def test_program_functionality(program_name):
             f.write("test content")
 
     try:
-        watermarker = fget_watermarker("eq_instr")
+        watermarker = fget_watermarker("equal_funcs")
 
         available_bits = watermarker.get_nbits(original_program)
         max_chars = available_bits // 8
