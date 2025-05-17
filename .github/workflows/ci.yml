@@ -24,5 +24,19 @@ jobs:
         run: poetry install --no-interaction
       - name: Run Lint Check
         run: poetry run make check
-      - name: Run Tests
-        run: poetry run pytest riscv_watermark/tests/test_main.py
+      - name: Install QEMU and RISC-V libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-riscv64 qemu-user libc6-riscv64-cross gcc-riscv64-linux-gnu
+          # Create symlink for RISC-V libraries
+          sudo mkdir -p /usr/riscv64-linux-gnu/lib
+          sudo ln -s /usr/riscv64-linux-gnu/lib/ld-linux-riscv64-lp64d.so.1 /lib/ld-linux-riscv64-lp64d.so.1
+          # Set QEMU_LD_PREFIX
+          echo "QEMU_LD_PREFIX=/usr/riscv64-linux-gnu" >> $GITHUB_ENV
+      - name: Check binary files
+        run: |
+          # Make sure all binaries are executable
+          chmod +x example_bins/*.elf
+      - name: Build and Test with QEMU
+        run: |
+          poetry run pytest riscv_watermark/tests/test_programs_functionality.py -v
