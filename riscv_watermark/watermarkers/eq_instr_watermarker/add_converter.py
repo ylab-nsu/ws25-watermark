@@ -2,7 +2,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 def convert_add_addi(instr):
     """Конвертирует ADDI rd, rs1, 0 в ADD rd, rs1, x0 и наоборот."""
     is_add, add_data = is_addx0(instr)

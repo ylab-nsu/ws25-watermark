@@ -83,35 +83,33 @@ class EquivalentInstructionWatermarker(Watermarker):
                     logger.info(f"Original opcode: {orig_opcode}")
                     logger.info(f"Current bit position: {tracker}")
 
-                if (i.mnemonic == "addi" or i.mnemonic == "add") and list(i.op_str.split())[-1] in [
-                    "0",
-                    "x0",
-                    "zero",
-                ]:
-                    if "ls.elf" in filename:
-                        logger.info(f"Found modifiable instruction: {i.mnemonic} {i.op_str}")
+                if (i.mnemonic == "addi" or i.mnemonic == "add"):
+                    operands = i.op_str.split(", ")
+                    if len(operands) == 3 and operands[2] in ["0", "x0", "zero"]:
+                        if "ls.elf" in filename:
+                            logger.info(f"Found modifiable instruction: {i.mnemonic} {i.op_str}")
 
-                    if (bitstr[tracker] == "1" and i.mnemonic == "add") or (
-                        bitstr[tracker] == "0" and i.mnemonic == "addi"
-                    ):  # addi = 1; add = 0
-                        opcode = orig_opcode
-                        converted = convert_add_addi(int.from_bytes(bytearray.fromhex(opcode)))
-                        if converted is not None:
-                            if "ls.elf" in filename:
-                                logger.info(f"Successfully converted instruction to: {converted.hex()}")
-                            out = str(converted)
-                            opcodes += out
+                        if (bitstr[tracker] == "1" and i.mnemonic == "add") or (
+                            bitstr[tracker] == "0" and i.mnemonic == "addi"
+                        ):  # addi = 1; add = 0
+                            opcode = orig_opcode
+                            converted = convert_add_addi(int.from_bytes(bytearray.fromhex(opcode)))
+                            if converted is not None:
+                                if "ls.elf" in filename:
+                                    logger.info(f"Successfully converted instruction to: {converted.hex()}")
+                                out = str(converted)
+                                opcodes += out
+                            else:
+                                if "ls.elf" in filename:
+                                    logger.info("Conversion failed, keeping original instruction")
+                                out = orig_opcode
+                                opcodes += out
                         else:
                             if "ls.elf" in filename:
-                                logger.info("Conversion failed, keeping original instruction")
+                                logger.info("No conversion needed, keeping original instruction")
                             out = orig_opcode
                             opcodes += out
-                    else:
-                        if "ls.elf" in filename:
-                            logger.info("No conversion needed, keeping original instruction")
-                        out = orig_opcode
-                        opcodes += out
-                    tracker += 1
+                        tracker += 1
                 elif i.mnemonic == "c.nop":
                     if "ls.elf" in filename:
                         logger.info(f"Processing NOP instruction at bit position {tracker}")
@@ -145,18 +143,13 @@ class EquivalentInstructionWatermarker(Watermarker):
         listing = super().disassembly(filename)
         for i in listing:
             orig_opcode = str(i)[str(i).find("[") + 1 : str(i).find("]")]
-            if i.mnemonic == "addi" and list(i.op_str.split())[-1] in [
-                "0",
-                "x0",
-                "zero",
-            ]:
-                bitstr += "1"
-            elif i.mnemonic == "add" and list(i.op_str.split())[-1] in [
-                "0",
-                "x0",
-                "zero",
-            ]:
-                bitstr += "0"
+            if i.mnemonic in ["addi", "add"]:
+                operands = i.op_str.split(", ")
+                if len(operands) == 3 and operands[2] in ["0", "x0", "zero"]:
+                    if i.mnemonic == "addi":
+                        bitstr += "1"
+                    elif i.mnemonic == "add":
+                        bitstr += "0"
             elif orig_opcode in list(nop_opcodes_revd.keys()):
                 bitstr += nop_bits_revd[nop_opcodes_revd[orig_opcode]]
         bs = decode_bitstring(bitstr)
