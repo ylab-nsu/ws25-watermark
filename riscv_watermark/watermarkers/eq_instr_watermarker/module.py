@@ -83,7 +83,7 @@ class EquivalentInstructionWatermarker(Watermarker):
                     logger.info(f"Original opcode: {orig_opcode}")
                     logger.info(f"Current bit position: {tracker}")
 
-                if (i.mnemonic == "addi" or i.mnemonic == "add"):
+                if i.mnemonic == "addi" or i.mnemonic == "add":
                     operands = i.op_str.split(", ")
                     if len(operands) == 3 and operands[2] in ["0", "x0", "zero"]:
                         if "ls.elf" in filename:
