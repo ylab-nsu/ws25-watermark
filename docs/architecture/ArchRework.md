@@ -48,7 +48,7 @@ This UML was done using draw.io and is stored and can be accesed [here](./Waterm
 - We still use Strategy Pattern, but this design pattern is more clear and easy to understand and use. We define a Context class that plays classic role of the Strategy Pattern, providing seamless connection with Interface and concrete implementations.
 - We have a new `TextSection` object that encapsulates the `.text` section of the ELF file. It provides a uniform way to access the disassembly, raw bytes, and offsets.
 - The `Watermarker` interface is now more focused on the watermarking algorithm itself. It does not include any hard-coded methods for disassembly or ELF file handling.
-- Layered structure provides ability to use framework not only from command line, but also from other Python scripts. Also it provides better Separation of Concerns, moving CLI-only concerns to the CLI layer.
+- Layered structure provides ability to use framework not only from command line, but also from other Python scripts. Also it provides better Separation of Concerns, moving CLI-only concerns to the CLI layer and IO/Disassembly concerns to the `TextSectionHandler` class.
 - We have clear extension points for new watermarking methods. Each method now use the same `TextSection` object, and can easily access the disassembly, raw bytes, and offsets without touching low-level ELF file handling.
 
 More details about the new architecture can be found in the [Architecture](./Architecture.md) document.
