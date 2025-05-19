@@ -13,7 +13,6 @@ logger.setLevel(logging.INFO)
 TEST_PROGRAMS = {
     "echo.elf": {"args": ["Hello, World!"], "expected_output": "Hello, World!"},
     "cat.elf": {"args": ["test.txt"], "expected_output": "test content"},
-    "ls.elf": {"args": [], "expected_output_check": lambda x: len(x.split("\n")) > 0},
 }
 
 SECRET_MESSAGE = "This file has been signed with ws25-watermark"

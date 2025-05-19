@@ -7,15 +7,12 @@ def convert_add_addi(instr):
     """Конвертирует ADDI rd, rs1, 0 в ADD rd, rs1, x0 и наоборот."""
     is_add, add_data = is_addx0(instr)
     if is_add:
-        logger.debug(f"Converting ADD to ADDI with data: {add_data}")
         return get_addi0(add_data)
 
     is_addi, addi_data = is_addi0(instr)
     if is_addi:
-        logger.debug(f"Converting ADDI to ADD with data: {addi_data}")
         return get_addx0(addi_data)
 
-    logger.debug(f"Instruction not suitable for conversion: {hex(instr)}")
     return None  # Если инструкция не подходит под условия
 
 
@@ -32,10 +29,8 @@ def is_addx0(instr):
     # Проверяем опкоды (обычный ADD)
     if opcode1 == 0b0110011 and opcode2 == 0b000 and opcode3 == 0b0000000:
         if rs1 == 0:
-            logger.debug(f"Found ADD with rs1=x0: rd={rd}, rs2={rs2}")
             return True, (rd, rs2)
         elif rs2 == 0:
-            logger.debug(f"Found ADD with rs2=x0: rd={rd}, rs1={rs1}")
             return True, (rd, rs1)
 
     return False, None
@@ -51,7 +46,6 @@ def is_addi0(instr):
 
     # Проверяем опкоды (ADDI с imm = 0)
     if opcode1 == 0b0010011 and opcode2 == 0b000 and imm == 0:
-        logger.debug(f"Found ADDI with imm=0: rd={rd}, rs1={rs1}")
         return True, (rd, rs1)
 
     return False, None
@@ -66,7 +60,6 @@ def get_addx0(data):
     opcode3 = 0b0000000
 
     instr = (opcode3 << 25) | (rs2 << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
-    logger.debug(f"Generated ADD instruction: rd={rd}, rs1={rs1}, rs2=0")
     return instr.to_bytes(4, byteorder="little")
 
 
@@ -78,5 +71,4 @@ def get_addi0(data):
     imm = 0
 
     instr = (imm << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
-    logger.debug(f"Generated ADDI instruction: rd={rd}, rs1={rs1}, imm=0")
     return instr.to_bytes(4, byteorder="little")
