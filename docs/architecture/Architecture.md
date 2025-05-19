@@ -16,17 +16,23 @@ Folder orgainization is as follows:
 
 ```text
 watermark_framework/
-├── architecture.py          # Defines Architecture enum (e.g., RISCV64, X86_64)
+├── __init__.py              # Package initialization, exports key classes (e.g., WatermarkService)
+├── architecture.py          # Defines the Architecture enum (e.g., RISCV64, X86_64)
 ├── io/
-│   ├── loader.py            # TextSectionHandler imports Architecture
-│   └── writer.py
+│   └── section_handler.py   # SectionHandler, TextSection
 ├── core/
-│   └── service.py           # WatermarkService imports Architecture
-└── watermarkers/
-    ├── interface.py         # Watermarker interface uses Architecture
-    └── eq_instr/
-        ├── riscv.py         # Imports Architecture for RISCV64
-        └── x86.py           # Imports Architecture for X86_64
+│   └── service.py           # WatermarkService, main entry point
+├── watermarkers/
+│   ├── __init__.py          # Exports built-in Watermarker strategies
+│   ├── interface.py         # Defines the Watermarker Interface
+│   ├── eq_instr/
+│   │   ├── common.py        # EquivalentInstructionWatermarker
+│   │   └── handlers.py      # Architecture-specific handlers (if needed)
+│   └── stack/
+│       ├── common.py
+│       └── handlers.py      
+└── cli/                     # CLI Layer
+    └── main.py
 ```
 
 # Main Design Decisions
