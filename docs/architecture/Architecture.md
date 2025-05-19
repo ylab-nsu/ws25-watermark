@@ -209,6 +209,10 @@ Each Watermarker implementation is responsible for providing its supported archi
     SUPPORTED_ARCHS = { Architecture.RISCV64, Architecture.X86_64 }
 ```
 
+As developers of the framework, **we guarantee that only supported architectures will be passed to the Watermarker class**. This means you can safely omit the check for unsupported architectures in your code.
+
+We describe how to support multiple architectures in your Watermarker and provide guidelines in the [How to write a Watermarker](./../HowToWatermarker.md) document.
+
 ## Extension Policy
 
 The Watermark framework is designed to be easily extensible, allowing users and developers to add new watermarking strategies without modifying the core codebase.
@@ -222,11 +226,13 @@ We’ve defined a clear policy for extending the framework with new `Watermarker
 
 For users who install the Watermark framework via pip, the primary way to extend the framework is by creating a custom `Watermarker` implementation and passing an instance of it to `WatermarkService`.
 
+Guidelines for creating a custom Watermarker are provided in the [How to write a Watermarker](./../HowToWatermarker.md) document.
+
 This approach is straightforward and doesn’t require modifying the library’s code:
 
 1. **Create a Custom Watermarker**:
    - Users implement a new class that inherits from the `Watermarker` interface (defined in `watermark_framework.watermarkers.interface`).
-   - The class must implement the required methods (`get_nbits()`, `encode()`, `decode()`) and define `SUPPORTED_ARCHS` to specify compatible architectures (e.g., `Architecture.RISCV64`).
+   - Detailed guidelines: [How to write a Watermarker](./../HowToWatermarker.md).
 
 2. **Use the Custom Watermarker**:
    - Users instantiate their custom Watermarker and pass it to WatermarkService’s `encode()`, `decode()`, or `set_strategy()` methods, or provide it to the constructor.
@@ -237,7 +243,7 @@ For developers contributing to the Watermark framework (e.g., those working with
 
 1. **Create a New Watermarker Class**:
    - Developers create a new class in the `watermark_framework/watermarkers` directory, following the naming convention of existing classes (e.g., `MyCustomWatermarker`).
-   - Implement the class, ensuring it inherits from `Watermarker` and defines all required methods and `SUPPORTED_ARCHS` with `NAME`.
+   - Detailed guidelines: [How to write a Watermarker](./../HowToWatermarker.md).
 
 2. **Export the New Watermarker**:
    - Export the new strategy in `watermark_framework/watermarkers/__init__.py` to make it accessible to users:
@@ -249,3 +255,9 @@ For developers contributing to the Watermark framework (e.g., those working with
 3. **Update Documentation**:
    - Document the new strategy in the framework’s documentation, including its purpose, configuration options, and example usage.
    - `TODO:` link
+
+### CLI Extension
+
+`TODO:` describe CLI Layer module to parse .py file and extract custom Watermarker implementation.
+
+The CLI can parse a file or directory containing Watermarker implementations
