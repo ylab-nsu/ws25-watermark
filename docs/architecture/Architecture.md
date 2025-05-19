@@ -8,6 +8,7 @@ Later it will be moved to the main documentation
 Project architecture is using extensible and maintainable design patterns to provide a clear and easy way to add new watermarking methods.
 
 Diagram below shows the architecture class diagram:
+
 ![New Architecture](./pics/Watermark_new.png)
 
 Old architecture and its flaws are described in the [Architecture Rework Report](./ArchRework.md).
