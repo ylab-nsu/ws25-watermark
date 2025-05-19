@@ -1,3 +1,5 @@
+import logging
+
 from riscv_watermark.watermarkers.eq_instr_watermarker.add_converter import convert_add_addi
 from riscv_watermark.watermarkers.eq_instr_watermarker.dictionaries import nop_bits, nop_opcodes
 from riscv_watermark.watermarkers.interface import Watermarker
@@ -6,6 +8,8 @@ from riscv_watermark.watermarkers.interface import Watermarker
 Sample watermark example that just sets
 "add","addi", "c.add", "c.addi" to zeros
 """
+
+logger = logging.getLogger(__name__)
 
 
 def decode_bitstring(bs):
@@ -64,12 +68,10 @@ class EquivalentInstructionWatermarker(Watermarker):
         bslen = len(bitstr)
         tracker = 0
         listing = super().disassembly(filename)
+
         for i in listing:
-            orig_opcode = str(i)[str(i).find("[") + 1 : str(i).find("]")]
+            orig_opcode = i.bytes.hex()
             if tracker < bslen:
-                # the demo uses all available bits, but
-                # really it can be any amount, so we
-                # should modify until the message is coded
                 if (i.mnemonic == "addi" or i.mnemonic == "add") and list(i.op_str.split())[-1] in [
                     "0",
                     "x0",
@@ -79,7 +81,15 @@ class EquivalentInstructionWatermarker(Watermarker):
                         bitstr[tracker] == "0" and i.mnemonic == "addi"
                     ):  # addi = 1; add = 0
                         opcode = orig_opcode
-                        out = str(convert_add_addi(int.from_bytes(bytearray.fromhex(opcode))))
+                        converted = convert_add_addi(int.from_bytes(bytearray.fromhex(opcode)))
+                        if converted is not None:
+                            out = str(converted)
+                            opcodes += out
+                        else:
+                            out = orig_opcode
+                            opcodes += out
+                    else:
+                        out = orig_opcode
                         opcodes += out
                     tracker += 1
                 elif i.mnemonic == "c.nop":
@@ -96,6 +106,7 @@ class EquivalentInstructionWatermarker(Watermarker):
             else:
                 out = str(i)[str(i).find("[") + 1 : str(i).find("]")]
                 opcodes += out
+
         return bytearray.fromhex(opcodes)
 
     def decode(self, filename):

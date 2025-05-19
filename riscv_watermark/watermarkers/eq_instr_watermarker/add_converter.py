@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def convert_add_addi(instr):
     """Конвертирует ADDI rd, rs1, 0 в ADD rd, rs1, x0 и наоборот."""
     is_add, add_data = is_addx0(instr)
@@ -55,7 +60,6 @@ def get_addx0(data):
     opcode3 = 0b0000000
 
     instr = (opcode3 << 25) | (rs2 << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
-
     return instr.to_bytes(4, byteorder="little")
 
 
@@ -67,5 +71,4 @@ def get_addi0(data):
     imm = 0
 
     instr = (imm << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
-
     return instr.to_bytes(4, byteorder="little")
