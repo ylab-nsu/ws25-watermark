@@ -15,7 +15,7 @@ class Encoder:
     methods to encode hidden messages into binary files.
     """
 
-    def __init__(self, src_filename: str, methods: list[Watermarker], message: str):
+    def _init_(self, src_filename: str, methods: list[Watermarker], message: str):
         """
         Initialize the encoder with source file, watermarking methods, and message.
 
@@ -27,14 +27,14 @@ class Encoder:
         :type message: str
         :raises NoMethodsError: If no watermarking methods are provided
         """
-        self.__src_filename = src_filename
-        self.__methods = methods
-        self.__message: str = message
+        self._src_filename = src_filename
+        self._methods = methods
+        self._message: str = message
 
         self.capacities: Dict[str, int] = {}
-        for watermarker in self.__methods:
-            method_name = watermarker.__class__.__name__
-            bits = watermarker.get_nbits(self.__src_filename)
+        for watermarker in self._methods:
+            method_name = watermarker._class_._name_
+            bits = watermarker.get_nbits(self._src_filename)
             self.capacities[method_name] = bits
         self.max_capacity = max(self.capacities.values())
 
@@ -47,7 +47,7 @@ class Encoder:
         :type method_name: Optional[str]
         :return: True if the message can be encoded, False otherwise
         """
-        message_bits = len(self.__message.encode("utf-8")) * 8
+        message_bits = len(self._message.encode("utf-8")) * 8
 
         if method_name is not None:
             return self.capacities.get(method_name, 0) >= message_bits
@@ -70,21 +70,21 @@ class Encoder:
         """
 
         if not self.can_encode():
-            msg_bits_needed = len(self.__message.encode("utf-8")) * 8
+            msg_bits_needed = len(self._message.encode("utf-8")) * 8
             raise InsufficientCapacityError(bits_available=self.max_capacity, bits_needed=msg_bits_needed)
 
         new_data = b""
 
-        for watermarker in self.__methods:
+        for watermarker in self._methods:
             try:
-                bits_capacity = watermarker.get_nbits(self.__src_filename)
+                bits_capacity = watermarker.get_nbits(self._src_filename)
 
-                message = self.__message
+                message = self._message
                 msg_len = len(message)
 
                 if bits_capacity * 8 < 1:
                     logger.warning(
-                        f"Skipping {watermarker.__class__.__name__}: "
+                        f"Skipping {watermarker._class_._name_}: "
                         f"Low amount of encodable bits: {bits_capacity}"
                     )
                     continue
@@ -98,13 +98,13 @@ class Encoder:
                 else:
                     message += " " * (bits_capacity * 8 - msg_len)
 
-                new_data = watermarker.encode(self.__src_filename, message)
+                new_data = watermarker.encode(self._src_filename, message)
 
                 if new_data:
-                    logger.info(f"Successfully encoded message using {watermarker.__class__.__name__}")
+                    logger.info(f"Successfully encoded message using {watermarker._class_._name_}")
                     return new_data
             except Exception as e:
-                logger.warning(f"{watermarker.__class__.__name__} method failed: {str(e)}")
+                logger.warning(f"{watermarker._class_._name_} method failed: {str(e)}")
 
         logger.error("All watermarking methods failed")
         raise EncodingError("Failed to encode message with any available watermarking method")
