@@ -7,7 +7,7 @@ Later it will be moved to the main documentation
 
 Project architecture is using extensible and maintainable design patterns to provide a clear and easy way to add new watermarking methods.
 
-Diagram below shows the new architecture class diagram:
+Diagram below shows the architecture class diagram:
 ![New Architecture](./pics/Watermark_new.png)
 
 Old architecture and its flaws are described in the [Architecture Rework Report](./ArchRework.md).
@@ -29,9 +29,9 @@ watermark_framework/
         └── x86.py           # Imports Architecture for X86_64
 ```
 
-## Main Design Decisions
+# Main Design Decisions
 
-### Strategy Pattern
+## Strategy Pattern
 
 Use of Strategy Pattern is obvious in our project, because we are aiming to provide multiple watermarking strategies and easy way to add new ones.
 
@@ -39,14 +39,120 @@ As a Context class we define `WatermarkService` class, which is responsible for 
 
 ![WatermarkService](./pics/Watermarker_Strategy.png)
 
-We choosed a model in which user is responsible for initializing concrete `Watermarker` implementations, and then passing it to the `encode()`/`decode()` methods.
+### How we manage strategies
 
-User gets this concrete implementations by:
+In the Strategy Pattern, the *Context* (in our case, `WatermarkService`) delegates the watermarking logic to a *Strategy* (implemented by classes adhering to the `Watermarker` interface).
 
-- Using Builtin methods (discussed below)
-- Providing implementation class by himself
+This allows the framework to support multiple watermarking algorithms interchangeably, with the flexibility to add new strategies without modifying the core service.
 
-### TextSection Object
+We chose a model where the **user is responsible for initializing** concrete `Watermarker` implementations and passing these instances to `WatermarkService`.
+
+This approach of passing instances instead of classes ensures maximum flexibility, as **users can configure strategies with custom parameters**.
+
+> *For example*: configuring equivalent instructions for `EquivalentInstructionWatermarker`.
+
+#### Strategy Instance Management
+
+1. **Passing Instances to `encode()` and `decode()`**:
+   - The `encode()` and `decode()` methods accept a `Watermarker` instance, which must implement the `Watermarker` interface.
+   - Users can create and configure their own instances of `Watermarker` and pass them directly to these methods. Or use built-in strategies.
+2. **Passing Instances to the Constructor**:
+    - The `WatermarkService` constructor accepts an optional `Watermarker` instance, allowing users to set a default strategy at initialization.
+3. **Dynamic Strategy and File Switching with `set_strategy()` and `set_file()`**:
+   - To enhance usability, `WatermarkService` provides two setter methods:
+     - `set_strategy(strategy: Watermarker)`: Updates the current strategy, validating that it’s a valid `Watermarker` instance and compatible with the loaded file’s architecture.
+     - `set_file(path: str)`: Loads a new ELF file, updating the internal `TextSection` and ensuring compatibility with the current strategy (if set).
+
+Examples with pseudo-python code that provides better understanding of used pattern:
+
+### Use of builtin watermarker with default configuration
+
+```python
+from watermark_framework.core.service import WatermarkService
+from watermark_framework.watermarkers import EquivalentInstructionWatermarker
+
+svc = WatermarkService("example.elf")
+
+patched = svc.encode("secret", EquivalentInstructionWatermarker())
+print(f"Patched: {patched}")
+
+svc.set_file(patched)
+
+decoded = svc.decode(EquivalentInstructionWatermarker())
+print(f"Decoded: {decoded}")
+```
+
+Example of **passing Watermarker instance to constructor**:
+
+```python
+from watermark_framework.core.service import WatermarkService
+from watermark_framework.watermarkers import EquivalentInstructionWatermarker
+
+svc = WatermarkService("example.elf", EquivalentInstructionWatermarker())
+
+patched = svc.encode("secret")
+print(f"Patched: {patched}")
+
+svc.set_file(patched)
+
+decoded = svc.decode()
+print(f"Decoded: {decoded}")
+```
+
+**Changing the strategy** after initialization is also possible:
+
+```python
+from watermark_framework.core.service import WatermarkService
+from watermark_framework.watermarkers import EquivalentInstructionWatermarker, StackWatermarker
+
+svc = WatermarkService("example.elf", EquivalentInstructionWatermarker())
+
+patched = svc.encode("secret")
+print(f"Patched with eq_instr: {patched}")
+
+svc.set_strategy(StackWatermarker())
+
+patched_stack = svc.encode("secret")
+print(f"Patched with stack watermarker: {patched_stack}")
+```
+
+### Use of builtin watermarker with custom configuration
+
+Because we are passing to `encode()`/`decode()` instances of `Watermarker` class, we can easily configure them with custom parameters in constructor.
+
+Such as configuring equivalent instructions for `EquivalentInstructionWatermarker`:
+
+```python
+from watermark_framework.core.service import WatermarkService
+from watermark_framework.watermarkers import EquivalentInstructionWatermarker
+
+svc = WatermarkService("example.elf")
+
+equiv_insns = [
+    (..., ...)
+    (..., ...),
+    ...
+]
+custom_strategy = EquivalentInstructionWatermarker(equivalent_instructions=equiv_insns)
+
+patched = svc.encode("secret", custom_strategy)
+
+svc.set_file(patched)
+decoded = svc.decode(custom_strategy)
+```
+
+### Use of custom watermarker
+
+```python
+from my_watermarker import MyCustomWatermarker
+
+svc = WatermarkService("example.elf")
+
+patched = svc.encode("secret", MyCustomWatermarker())
+print(f"Patched: {patched}")
+```
+
+## TextSection Object
 
 The `TextSection` object is a structured data container that holds all the essential information about the `.text` section of an ELF binary.
 
@@ -75,7 +181,7 @@ Overview of the `TextSection` fields:
 | `arch`     | `Architecture`  | The architecture of the binary (e.g., RISC-V 64-bit, RISC-V 32-bit), represented as an enum.|
 | `src_path` | `str`           | The file path of the original ELF binary, stored for reference during file writing operations.|
 
-### Support for Multiple Architectures
+## Support for Multiple Architectures
 
 Our team decided to add support for multiple architectures, because we are aiming to provide a generic solution that can be used on different platforms.  
 
@@ -103,6 +209,15 @@ Each Watermarker implementation is responsible for providing its supported archi
     SUPPORTED_ARCHS = { Architecture.RISCV64, Architecture.X86_64 }
 ```
 
-### Extension Policy
+## Extension Policy
+
+Определена политика расширения стратегий ватермаркера:
+-> при разработке - папка в /watermarkers/  +  запись в enum
+-> в своем проекте разработан свой класс MyWatermarker -> прямо так подается в encode/decode
+-> CLI парсит через чисто свой метод файл/папку находит Watermarker инстансы -> использует сразу в дело
+
+То есть основной способ для юзера который скачал библиотеку через pip - это именно передвать Класс, очевидно же что он не полезет внутрь кода библиотеки
+
+А способ расширения через папку в watermarkers и енам - способ чисто для нас и для юзеров которые будут полностью выкачивать репозитлрий и работать с ним так
 
 - enums!!!
