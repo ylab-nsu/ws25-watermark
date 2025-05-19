@@ -13,8 +13,8 @@ class Decoder:
     """
 
     def __init__(self, patched_filename: str, methods: list[Watermarker]):
-        self.__patched_filename = patched_filename
-        self.__methods = methods
+        self._patched_filename = patched_filename
+        self._methods = methods
 
     def decode(self) -> Dict[str, str]:
         """
@@ -26,23 +26,24 @@ class Decoder:
         """
         res = {}
 
-        if len(self.__methods) == 1:
+        if len(self._methods) == 1:
             try:
-                decoded = self.__methods[0].decode(self.__patched_filename)
+                decoded = self._methods[0].decode(self._patched_filename)
                 if decoded is None:
                     raise DecodingError("Method is not implemented")
-                res[self.__methods[0].__class__.__name__] = decoded.rstrip()
+                res[self._methods[0].__class__.__name__] = decoded.rstrip()
             except Exception as e:
-                logger.error(f"{self.__methods[0].__class__.__name__} failed: {e}")
+                logger.error(f"{self._methods[0].__class__.__name__} failed: {e}")
         else:
-            for watermarker in self.__methods:
+            for watermarker in self._methods:
                 try:
-                    decoded = watermarker.decode(self.__patched_filename)
+                    decoded = watermarker.decode(self._patched_filename)
                     if decoded is None:
                         raise DecodingError("Method is not implemented")
-                    res[watermarker.__class__.__name__] = decoded.rstrip()
+                    watermarker_name = watermarker.__class__.__name__
+                    res[watermarker_name] = decoded.rstrip()
                 except Exception as e:
-                    logger.warning(f"{watermarker.__class__.__name__} failed: {e}")
+                    logger.warning(f"{watermarker_name} failed: {e}")
                     continue
         if not res:
             raise DecodingError("Failed to decode with all methods")

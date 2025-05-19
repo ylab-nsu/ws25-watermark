@@ -134,28 +134,23 @@ def encode_message(
         new_filename = output_file if output_file else f"{filename}.patched"
         logger.info(f"Creating patched file: {new_filename}")
 
-        try:
-            with open(filename, "rb") as source_file:
-                original_data = source_file.read()
-                source_file.seek(0)
-                elf_file = ELFFile(source_file)
-                text_section = elf_file.get_section_by_name(".text")
-                if not text_section:
-                    logger.error("Could not find .text section in ELF file")
-                    sys.exit(1)
+        with open(filename, "rb") as source_file:
+            original_data = source_file.read()
+            source_file.seek(0)
+            elf_file = ELFFile(source_file)
+            text_section = elf_file.get_section_by_name(".text")
+            if not text_section:
+                logger.error("Could not find .text section in ELF file")
+                sys.exit(1)
 
-                text_addr = text_section["sh_addr"]
+            text_offset = text_section["sh_offset"]
 
-            with open(new_filename, "wb") as target_file:
-                target_file.write(original_data)
-                target_file.seek(text_addr)
-                target_file.write(new_data)
+        with open(new_filename, "wb") as target_file:
+            target_file.write(original_data)
+            target_file.seek(text_offset)
+            target_file.write(new_data)
 
-            logger.info(f"Message successfully encoded in {new_filename}")
-
-        except IOError as e:
-            logger.error(f"File operation failed: {e}")
-            sys.exit(1)
+        logger.info(f"Message successfully encoded in {new_filename}")
 
     except Exception as e:
         logger.error(f"Encoding failed: {e}")
