@@ -210,6 +210,10 @@ Each member of `Architecture` Enum defines metadata for an architecture, includi
 | `e_machine`      | `int`          | ELF machine type (e.g., `EM_RISCV`).|
 | `elf_class`      | `Optional[int]`| ELF class (32 or 64) or `None` if not applicable.|
 
+> `Architecture` also have classmethod: `from_elf(e_machine: int, elf_class: int) -> Architecture`  
+>
+> It maps ELF header values (`e_machine` and `elf_class`) to an `Architecture` member. (used by `TextSectionHandler`)
+
 Each Watermarker implementation is responsible for providing its supported architecture in the `SUPPORTED_ARCHS` field.
 
 ```python
