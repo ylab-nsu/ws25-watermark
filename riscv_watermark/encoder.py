@@ -15,7 +15,7 @@ class Encoder:
     methods to encode hidden messages into binary files.
     """
 
-    def _init_(self, src_filename: str, methods: list[Watermarker], message: str):
+    def __init__(self, src_filename: str, methods: list[Watermarker], message: str):
         """
         Initialize the encoder with source file, watermarking methods, and message.
 
@@ -33,7 +33,7 @@ class Encoder:
 
         self.capacities: Dict[str, int] = {}
         for watermarker in self._methods:
-            method_name = watermarker._class_._name_
+            method_name = watermarker.__class__.__name__
             bits = watermarker.get_nbits(self._src_filename)
             self.capacities[method_name] = bits
         self.max_capacity = max(self.capacities.values())
@@ -71,7 +71,11 @@ class Encoder:
 
         if not self.can_encode():
             msg_bits_needed = len(self._message.encode("utf-8")) * 8
-            raise InsufficientCapacityError(bits_available=self.max_capacity, bits_needed=msg_bits_needed)
+            raise InsufficientCapacityError(
+                f"Not enough bits available. "
+                f"Need {msg_bits_needed} bits, "
+                f"but only {self.max_capacity} bits are available."
+            )
 
         new_data = b""
 
@@ -84,7 +88,7 @@ class Encoder:
 
                 if bits_capacity * 8 < 1:
                     logger.warning(
-                        f"Skipping {watermarker._class_._name_}: "
+                        f"Skipping {watermarker.__class__.__name__}: "
                         f"Low amount of encodable bits: {bits_capacity}"
                     )
                     continue
@@ -101,10 +105,10 @@ class Encoder:
                 new_data = watermarker.encode(self._src_filename, message)
 
                 if new_data:
-                    logger.info(f"Successfully encoded message using {watermarker._class_._name_}")
+                    logger.info(f"Successfully encoded message using {watermarker.__class__.__name__}")
                     return new_data
             except Exception as e:
-                logger.warning(f"{watermarker._class_._name_} method failed: {str(e)}")
+                logger.warning(f"{watermarker.__class__.__name__} method failed: {str(e)}")
 
         logger.error("All watermarking methods failed")
         raise EncodingError("Failed to encode message with any available watermarking method")
