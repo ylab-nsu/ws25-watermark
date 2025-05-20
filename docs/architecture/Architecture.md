@@ -11,6 +11,8 @@ Diagram below shows the architecture class diagram:
 
 ![New Architecture](./pics/Watermark_new.png)
 
+This UML was done using draw.io and is stored and can be accesed [here](./drawio/Watermark_new.drawio).
+
 Old architecture and its flaws are described in the [Architecture Rework Report](./ArchRework.md).
 
 Folder orgainization is as follows:

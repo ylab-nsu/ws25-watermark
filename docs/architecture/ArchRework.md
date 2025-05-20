@@ -12,7 +12,7 @@ This is the report about deep rework done on project architecture to make it mor
 You can overview the previous architecture class diagram in the following image:
 ![Previous Architecture](./pics/Watermark_old.png)
 
-This UML was done using draw.io and is stored and can be accesed [here](./Watermark_old.drawio).
+This UML was done using draw.io and is stored and can be accesed [here](./drawio/Watermark_old.drawio).
 
 ## Main Problems of Previous Architecture
 
