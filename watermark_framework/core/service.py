@@ -40,14 +40,22 @@ class WatermarkService:
         selected_strategy = self._get_valid_strategy(strategy)
         return selected_strategy.get_nbits(self._section)
 
-    def encode(self, message: str, strategy: Optional[Watermarker] = None, dst: Optional[str] = None) -> str:
+    def encode(self, message: bytes, strategy: Optional[Watermarker] = None, dst: Optional[str] = None) -> str:
         selected_strategy = self._get_valid_strategy(strategy)
+        
+        message_bits = len(message) * 8
+        capacity = selected_strategy.get_nbits(self._section)
+        
+        if message_bits > capacity:
+            raise ValueError(
+                f"Message size ({message_bits} bits) exceeds section capacity ({capacity} bits)"
+        )
         
         new_text = selected_strategy.encode(self._section, message)
         out = dst or (self._section.src_path + ".patched")
         TextSectionHandler.write(self._section, out, new_text)
         return out
 
-    def decode(self, strategy: Optional[Watermarker] = None) -> str:
+    def decode(self, strategy: Optional[Watermarker] = None) -> bytes:
         selected_strategy = self._get_valid_strategy(strategy)
         return selected_strategy.decode(self._section)
