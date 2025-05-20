@@ -9,12 +9,15 @@ class WatermarkService:
         self._strategy: Optional[Watermarker] = None
         if strategy:
             self.set_strategy(strategy)
-
-    def set_strategy(self, strategy: Watermarker) -> None:
+            
+    def _validate_strategy(self, strategy: Watermarker) -> None:
         if self._section.arch not in strategy.SUPPORTED_ARCHS:
             raise ValueError(
                 f"Strategy {strategy.METHOD_NAME} does not support architecture {self._section.arch}"
             )
+
+    def set_strategy(self, strategy: Watermarker) -> None:
+        self._validate_strategy(strategy)
         self._strategy = strategy
 
     def set_file(self, path: str) -> None:
@@ -27,10 +30,7 @@ class WatermarkService:
 
     def encode(self, message: str, strategy: Optional[Watermarker] = None, dst: Optional[str] = None) -> str:
         if strategy:
-            if self._section.arch not in strategy.SUPPORTED_ARCHS:
-                raise ValueError(
-                    f"Strategy {strategy.METHOD_NAME} does not support architecture {self._section.arch}"
-                )
+            self._validate_strategy(strategy)
         else:
             if not self._strategy:
                 raise ValueError("No strategy provided or set as default")
@@ -43,10 +43,7 @@ class WatermarkService:
 
     def decode(self, strategy: Optional[Watermarker] = None) -> str:
         if strategy:
-            if self._section.arch not in strategy.SUPPORTED_ARCHS:
-                raise ValueError(
-                    f"Strategy {strategy.METHOD_NAME} does not support architecture {self._section.arch}"
-                )
+            self._validate_strategy(strategy)
         else:
             if not self._strategy:
                 raise ValueError("No strategy provided or set as default")
