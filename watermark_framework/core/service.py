@@ -15,6 +15,14 @@ class WatermarkService:
             raise ValueError(
                 f"Strategy {strategy.METHOD_NAME} does not support architecture {self._section.arch}"
             )
+            
+    def _get_valid_strategy(self, strategy: Optional[Watermarker] = None) -> Watermarker:
+        if strategy:
+            self._validate_strategy(strategy)
+            return strategy
+        if not self._strategy:
+            raise ValueError("No strategy provided or set as default")
+        return self._strategy
 
     def set_strategy(self, strategy: Watermarker) -> None:
         self._validate_strategy(strategy)
@@ -27,26 +35,19 @@ class WatermarkService:
                 f"Current strategy {self._strategy.METHOD_NAME} does not support architecture {new_section.arch}"
             )
         self._section = new_section
+        
+    def get_capacity(self, strategy: Optional[Watermarker] = None) -> int:
+        selected_strategy = self._get_valid_strategy(strategy)
+        return selected_strategy.get_nbits(self._section)
 
     def encode(self, message: str, strategy: Optional[Watermarker] = None, dst: Optional[str] = None) -> str:
-        if strategy:
-            self._validate_strategy(strategy)
-        else:
-            if not self._strategy:
-                raise ValueError("No strategy provided or set as default")
-            strategy = self._strategy
-
-        new_text = strategy.encode(self._section, message)
+        selected_strategy = self._get_valid_strategy(strategy)
+        
+        new_text = selected_strategy.encode(self._section, message)
         out = dst or (self._section.src_path + ".patched")
         TextSectionHandler.write(self._section, out, new_text)
         return out
 
     def decode(self, strategy: Optional[Watermarker] = None) -> str:
-        if strategy:
-            self._validate_strategy(strategy)
-        else:
-            if not self._strategy:
-                raise ValueError("No strategy provided or set as default")
-            strategy = self._strategy
-
-        return strategy.decode(self._section)
+        selected_strategy = self._get_valid_strategy(strategy)
+        return selected_strategy.decode(self._section)
