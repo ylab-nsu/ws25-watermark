@@ -9,6 +9,18 @@ from watermark_framework.architecture import Architecture
 
 @dataclass
 class TextSection:
+    """
+    Stores metadata and disassembled instructions for an ELF .text section.
+
+    Attributes:
+        data (bytes): Raw .text section bytes.
+        insns (List[CsInsn]): Disassembled instructions.
+        vma (int): Virtual memory address (sh_addr).
+        offset (int): File offset (sh_offset).
+        size (int): Section size (sh_size).
+        arch (Architecture): Architecture (e.g., X86_64, RISCV).
+        src_path (str): Path to source ELF file.
+    """
     data: bytes
     insns: List['CsInsn']
     vma: int
@@ -20,6 +32,24 @@ class TextSection:
 class TextSectionHandler:
     @staticmethod
     def load(path: str) -> TextSection:
+        """
+        Loads and parses the .text section of an ELF file.
+
+        Reads the ELF file at the specified path, extracts the .text section,
+        and disassembles its instructions using Capstone.
+
+        Args:
+            path: Path to the ELF file to load.
+
+        Returns:
+            TextSection: An object containing the .text section's data, disassembled
+                instructions, and metadata.
+
+        Raises:
+            FileNotFoundError: If the ELF file cannot be opened.
+            ValueError: If no .text section is found or the architecture is unsupported.
+            RuntimeError: If Capstone disassembly fails.
+        """
         with open(path, 'rb') as f:
             elf = ELFFile(f)
             arch = Architecture.from_elf(
@@ -50,6 +80,24 @@ class TextSectionHandler:
 
     @staticmethod
     def write(section: TextSection, dst: str, new_data: bytes) -> None:
+        """
+        Writes a modified ELF file with an updated .text section.
+
+        Creates a new ELF file at the destination path by copying the original file
+        and replacing the .text section with the provided data. Ensures the new data
+        does not exceed the original .text section size.
+
+        Args:
+            section: TextSection object containing the original .text section metadata.
+            dst: Path to write the modified ELF file.
+            new_data: New bytes to write to the .text section.
+
+        Raises:
+            ValueError: If the .text section is empty or new_data size exceeds the
+                original .text section size.
+            FileNotFoundError: If the source ELF file cannot be read.
+            IOError: If writing to the destination file fails.
+        """
         if section.size == 0:
             raise ValueError("Cannot patch empty .text section")
         if len(new_data) > section.size:
