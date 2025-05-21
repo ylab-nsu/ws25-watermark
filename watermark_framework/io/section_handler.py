@@ -50,11 +50,15 @@ class TextSectionHandler:
 
     @staticmethod
     def write(section: TextSection, dst: str, new_data: bytes) -> None:
+        if section.size == 0:
+            raise ValueError("Cannot patch empty .text section")
         if len(new_data) > section.size:
-            raise ValueError("New data exceeds original .text section size")
+            raise ValueError(f"New data size ({len(new_data)}) exceeds .text section size ({section.size})")
 
-        with open(section.src_path, 'rb') as f:
-            data = bytearray(f.read())
-        data[section.offset:section.offset + len(new_data)] = new_data
-        with open(dst, 'wb') as f:
-            f.write(data)
+        with open(section.src_path, "rb") as source_file:
+            original_data = source_file.read()
+
+        with open(dst, "wb") as target_file:
+            target_file.write(original_data)
+            target_file.seek(section.offset)
+            target_file.write(new_data)
