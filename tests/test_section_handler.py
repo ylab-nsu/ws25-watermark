@@ -3,7 +3,7 @@ import os
 import pytest
 
 from watermark_framework.architecture import Architecture
-from watermark_framework.io.section_handler import TextSection, TextSectionHandler
+from watermark_framework.io import TextSection, TextSectionHandler
 
 TEST_DATA_DIR = "tests/data"
 

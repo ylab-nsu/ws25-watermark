@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Set
 
 from watermark_framework.architecture import Architecture
-from watermark_framework.io.section_handler import TextSection
+from watermark_framework.io import TextSection
 
 
 class Watermarker(ABC):

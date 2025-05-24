@@ -1,6 +1,6 @@
 from typing import Optional
 
-from watermark_framework.io.section_handler import TextSection, TextSectionHandler
+from watermark_framework.io import TextSection, TextSectionHandler
 from watermark_framework.watermarkers.interface import Watermarker
 
 

@@ -1,4 +1,9 @@
 
+## Incomind data convintions
+
+- already checked for capacity
+- only BYTES
+
 ## Supporting Multiple Architectures
 
 Here we present our recommendations for how to implement support for multiple architectures in a watermarking strategy.
