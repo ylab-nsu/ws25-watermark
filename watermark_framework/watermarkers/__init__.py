@@ -11,7 +11,7 @@ def get_available_strategies() -> list[str]:
     return list(get_watermarkers().keys())
 
 
-def get_strategy(name) -> type[Watermarker]:
+def get_strategy(name: str) -> type[Watermarker]:
     """Retrieves a Watermarker class by its METHOD_NAME."""
     watermarkers = get_watermarkers()
     if name not in watermarkers:

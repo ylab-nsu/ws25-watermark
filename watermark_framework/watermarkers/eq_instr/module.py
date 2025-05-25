@@ -1,4 +1,3 @@
-
 from watermark_framework.architecture import Architecture
 from watermark_framework.io import TextSection
 from watermark_framework.watermarkers.interface import Watermarker
@@ -11,7 +10,7 @@ class EquivalentInstructionWatermarker(Watermarker):
     SUPPORTED_ARCHS = {Architecture.RISCV}
     METHOD_NAME = "EQ_INSTR"
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.nop_bits: dict[str, str] = nop_bits
         self.nop_opcodes: dict[str, str] = nop_opcodes
@@ -33,8 +32,9 @@ class EquivalentInstructionWatermarker(Watermarker):
                     b = bitstr[tracker]
                     if (b == "1" and i.mnemonic == "add") or (b == "0" and i.mnemonic == "addi"):
                         orig_opcode = int.from_bytes(i.bytes, "little")
-                        new_opcode = convert_add_addi(orig_opcode)
-                        new_data[offset : offset + 4] = new_opcode
+                        converted = convert_add_addi(orig_opcode)
+                        if converted is not None:
+                            new_data[offset : offset + 4] = converted
                     # Else, keep the original opcode as it already matches the bit
                     tracker += 1
                 elif i.mnemonic == "c.nop":

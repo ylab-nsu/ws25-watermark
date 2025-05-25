@@ -65,3 +65,8 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
 disallow_untyped_decorators = true
+
+# Ignore missing library stubs for external dependencies
+[[tool.mypy.overrides]]
+module = ["capstone", "capstone.*", "bitstruct"]
+ignore_missing_imports = true

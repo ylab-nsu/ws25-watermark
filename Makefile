@@ -23,6 +23,9 @@ lint: ## Lint code with Ruff (no auto-fix)
 type-check: ## Run type checking with mypy
 	poetry run mypy watermark_framework/
 
+type-check-report: ## Run type checking with detailed error report
+	poetry run mypy watermark_framework/ --show-error-codes --pretty
+
 test: ## Run tests
 	poetry run pytest
 
