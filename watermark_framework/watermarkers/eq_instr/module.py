@@ -7,7 +7,7 @@ from typing import Dict
 
 class EquivalentInstructionWatermarker(Watermarker):
     SUPPORTED_ARCHS = {Architecture.RISCV}
-    METHOD_NAME = "EquivalentInstructionWatermarker"
+    METHOD_NAME = "EQ_INSTR"
 
     def __init__(self):
         super().__init__()
