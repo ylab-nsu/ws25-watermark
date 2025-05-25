@@ -4,6 +4,30 @@ In our watermarking framework, a watermarker is a class responsible for defining
 
 This guide provides detailed instructions for implementing and integrating a new watermarker into the framework.
 
+## 🎯 Watermarker Implementation Flow
+
+```mermaid
+graph TD
+    A[📋 Create New Class] --> B[⚙️ Implement Methods]
+    B --> C[🏷️ Set Attributes]
+    C --> D[🔧 Architecture Support]
+    
+    B --> B1["encode()"]
+    B --> B2["decode()"]
+    B --> B3["get_nbits()"]
+    
+    C --> C1[METHOD_NAME]
+    C --> C2[SUPPORTED_ARCHS]
+    
+    D --> D1[Simple if-else<br/>2-3 Architectures]
+    D --> D2[Handler Registry<br/>5+ Architectures]
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+```
+
 ## 📋 Prerequisites
 
 Before starting, ensure you have:
@@ -14,6 +38,40 @@ Before starting, ensure you have:
 
 > [!TIP]
 > Review the [Architecture documentation](./architecture/Architecture.md) to understand the overall framework design before implementing your watermarker.
+
+## 🏗️ Framework Component Relationships
+
+```mermaid
+graph TD
+    subgraph "Your Implementation"
+        YW[Your Watermarker<br/>📝 Custom Logic]
+    end
+    
+    subgraph "Framework Core"
+        WS[WatermarkService<br/>🎯 Context Class]
+        TSH[TextSectionHandler<br/>📄 ELF I/O Manager]
+        TS[TextSection<br/>📦 Data Container]
+    end
+    
+    subgraph "Data Flow"
+        ELF[ELF Binary<br/>🗂️ Input File]
+        OUTPUT[Modified Binary<br/>✅ Output File]
+    end
+    
+    ELF --> WS
+    TSH --> TS
+    TS --> YW
+    YW --> WS
+    WS --> TSH
+    TSH --> OUTPUT
+    
+    style YW fill:#ffcccb
+    style WS fill:#add8e6
+    style TSH fill:#98fb98
+    style TS fill:#f0e68c
+    style ELF fill:#d3d3d3
+    style OUTPUT fill:#90ee90
+```
 
 ## 🚀 Step 1: Create a New Class
 
@@ -72,6 +130,29 @@ def get_nbits(self, section: TextSection) -> int:
     # Implement capacity calculation here
     # Example: Analyze section.insns or section.data
     return 0  # Return bit capacity
+```
+
+## 🔄 Method Call Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant WS as WatermarkService
+    participant YW as Your Watermarker
+    participant TS as TextSection
+    
+    User->>WS: encode("secret", watermarker)
+    WS->>YW: get_nbits(section)
+    YW->>TS: analyze section.insns/data
+    TS-->>YW: capacity info
+    YW-->>WS: available bits
+    
+    WS->>YW: encode(section, message)
+    YW->>TS: modify section.data
+    YW-->>WS: modified bytes
+    WS-->>User: patched file path
+    
+    Note over User,TS: Decoding follows similar pattern<br/>with decode() method
 ```
 
 ## 🏷️ Step 3: Set Class Attributes
