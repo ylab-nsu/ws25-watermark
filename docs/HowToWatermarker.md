@@ -1,20 +1,128 @@
+# 🔧 How to Implement a Watermarker
 
-## Incomind data convintions
+In our watermarking framework, a watermarker is a class responsible for defining the strategy to encode and decode hidden messages within the `.text` section of ELF binaries.
 
-- already checked for capacity
-- only BYTES
+This guide provides detailed instructions for implementing and integrating a new watermarker into the framework.
 
-## Supporting Multiple Architectures
+## 📋 Prerequisites
+
+Before starting, ensure you have:
+
+- A solid understanding of Python programming
+- Familiarity with the project's architecture, particularly the [`WatermarkService`](../watermark_framework/core/service.py) and [`Watermarker` interface](../watermark_framework/watermarkers/interface.py)
+- Basic knowledge of ELF binaries and disassembly concepts
+
+> [!TIP]
+> Review the [Architecture documentation](./architecture/Architecture.md) to understand the overall framework design before implementing your watermarker.
+
+## 🚀 Step 1: Create a New Class
+
+1. Navigate to the [`watermark_framework/watermarkers/`](../watermark_framework/watermarkers/) directory in the project
+2. Create a new Python file for your watermarker, e.g., `my_watermarker.py`
+3. Define a class that inherits from the [`Watermarker` interface](../watermark_framework/watermarkers/interface.py):
+
+```python
+from watermark_framework.watermarkers.interface import Watermarker
+
+class MyWatermarker(Watermarker):
+    pass
+```
+
+This class will serve as the foundation for your custom watermarking logic.
+
+## ⚙️ Step 2: Implement Required Methods
+
+Your watermarker must implement the following three methods defined by the [`Watermarker` interface](../watermark_framework/watermarkers/interface.py):
+
+### `encode(self, section: TextSection, message: bytes) -> bytes`
+
+This method encodes the provided message (in bytes) into the `.text` section represented by the [`TextSection`](../watermark_framework/io/section_handler.py) object. It should return the modified `.text` section data as bytes.
+
+- **Input**: `section` provides access to disassembled instructions (`section.insns`) and raw data (`section.data`)
+- **Output**: The modified `.text` section data with the message embedded
+
+### `decode(self, section: TextSection) -> bytes`
+
+This method extracts and returns the hidden message from the `.text` section provided in `section`.
+
+- **Input**: The [`TextSection`](../watermark_framework/io/section_handler.py) object containing the watermarked `.text` section
+- **Output**: The decoded message in bytes
+
+### `get_nbits(self, section: TextSection) -> int`
+
+This method calculates and returns the number of bits that can be encoded in the given `.text` section, indicating the watermarking capacity.
+
+- **Input**: The [`TextSection`](../watermark_framework/io/section_handler.py) object
+- **Output**: An integer representing the available bit capacity
+
+Here's an example with placeholder implementations:
+
+```python
+def encode(self, section: TextSection, message: bytes) -> bytes:
+    # Implement your encoding logic here
+    # Example: Modify section.data based on message
+    return section.data  # Return modified data
+
+def decode(self, section: TextSection) -> bytes:
+    # Implement your decoding logic here
+    # Example: Extract message from section.data
+    return b""  # Return extracted message
+
+def get_nbits(self, section: TextSection) -> int:
+    # Implement capacity calculation here
+    # Example: Analyze section.insns or section.data
+    return 0  # Return bit capacity
+```
+
+## 🏷️ Step 3: Set Class Attributes
+
+Define the following required class attributes to identify and configure your watermarker:
+
+- **`METHOD_NAME`**: A unique string identifier for your watermarker (e.g., `"my_strategy"`). This is used by the framework to recognize and select your watermarker
+- **`SUPPORTED_ARCHS`**: A set of architectures your watermarker supports, using the [`Architecture`](../watermark_framework/architecture.py) enum (e.g., `{Architecture.RISCV64}`)
+
+Example:
+
+```python
+from watermark_framework.architecture import Architecture
+
+class MyWatermarker(Watermarker):
+    METHOD_NAME = "my_strategy"
+    SUPPORTED_ARCHS = {Architecture.RISCV64}
+
+    # Method implementations go here
+    def encode(self, section: TextSection, message: bytes) -> bytes:
+        return section.data
+
+    def decode(self, section: TextSection) -> bytes:
+        return b""
+
+    def get_nbits(self, section: TextSection) -> int:
+        return 0
+```
+
+> [!NOTE]
+> The framework uses dynamic discovery, so as long as your class is a subclass of [`Watermarker`](../watermark_framework/watermarkers/interface.py) and resides in the [`watermarkers/`](../watermark_framework/watermarkers/) directory, it will be automatically detected—no additional registration is needed.
+
+## 📦 Data Conventions
+
+> [!IMPORTANT]
+>
+> - The framework has already checked for capacity before calling your methods
+> - All messages are passed as `bytes` objects only
+
+## 🏗️ Supporting Multiple Architectures
 
 Here we present our recommendations for how to implement support for multiple architectures in a watermarking strategy.
 
 Of course you can just write huge switch-case statements, but that is not the best practice and because of that we provide our design guidelines.
 
-As developers of framework we **GUARANTEE that only supported architectures will be passed to the Watermarker** class. So you can safely omit the check for unsupported architectures in your code.
+> [!IMPORTANT]
+> As developers of the framework we **GUARANTEE that only supported architectures will be passed to the Watermarker** class. So you can safely omit the check for unsupported architectures in your code.
 
 ### Option 1: Simple if-else for 2-3 Architectures
 
-For strategies that only need to support a small number of architectures (e.g., RISCV64 and X86_64), we can avoid registries altogether and implement the logic directly in the Watermarker class using if-else statements. This is the simplest possible approach because it requires no additional classes or mappings
+For strategies that only need to support a small number of architectures (e.g., RISCV64 and X86_64), we can avoid registries altogether and implement the logic directly in the Watermarker class using if-else statements. This is the simplest possible approach because it requires no additional classes or mappings.
 
 ```python
 # watermark_framework/watermarkers/eq_instr/common.py
@@ -52,10 +160,13 @@ class EquivalentInstructionWatermarker(Watermarker):
 
 ### Option 2: Handler Class Registry for 5-6+ Architectures
 
-This case is less likely to occur in current state of the project, but it is worth mentioning. For strategies that need to support many architectures (e.g., RISCV64, X86_64, ARM64, and more), we can use a **handler class-based registry**.
+> [!NOTE]
+> This case is less likely to occur in current state of the project, but it is worth mentioning.
 
-- Each architecture has a dedicated handler class that encapsulates its specific logic.
-- The Watermarker class maintains a dictionary mapping architectures to these handler classes and delegates method calls to the appropriate handler.
+For strategies that need to support many architectures (e.g., RISCV64, X86_64, ARM64, and more), we can use a **handler class-based registry**.
+
+- Each architecture has a dedicated handler class that encapsulates its specific logic
+- The Watermarker class maintains a dictionary mapping architectures to these handler classes and delegates method calls to the appropriate handler
 
 ```python
 # watermark_framework/watermarkers/eq_instr/handlers.py
@@ -125,26 +236,26 @@ class EquivalentInstructionWatermarker(Watermarker):
 In this example we have a class-level dictionary `_ARCH_HANDLERS`:
 
 ```python
-    _ARCH_HANDLERS = {
-        Architecture.RISCV64: RiscvHandler,
-        Architecture.X86_64: X86Handler,
-    }
+_ARCH_HANDLERS = {
+    Architecture.RISCV64: RiscvHandler,
+    Architecture.X86_64: X86Handler,
+}
 ```
 
 In `EquivalentInstructionWatermarker` constructor we create a dictionary of handlers for each architecture:
 
 ```python
-    def __init__(self, equivalent_instructions=None):
-        self._handlers = {
-            arch: handler(equivalent_instructions or get_default_insns(arch))
-            for arch, handler in self._ARCH_HANDLERS.items()
-        }
+def __init__(self, equivalent_instructions=None):
+    self._handlers = {
+        arch: handler(equivalent_instructions or get_default_insns(arch))
+        for arch, handler in self._ARCH_HANDLERS.items()
+    }
 ```
 
-> `get_default_insns(arch)` is assumed to be a function (not shown in the code snippet) that returns default equivalent instructions for the given architecture.  
-> It is special for this example strategy and is not part of the guideline.
+> [!NOTE]
+> `get_default_insns(arch)` is assumed to be a function (not shown in the code snippet) that returns default equivalent instructions for the given architecture. It is special for this example strategy and is not part of the guideline.
 
-The resulting self._handlers dictionary will look like this:
+The resulting `self._handlers` dictionary will look like this:
 
 ```python
 {
