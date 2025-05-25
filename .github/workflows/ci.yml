@@ -97,9 +97,11 @@ jobs:
       run: make dev-install
 
     - name: 🧪 Run tests with coverage
-      run: make test-cov
-
-    - name: 📊 Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        fail_ci_if_error: false
+      run: |
+        echo "🧪 Running tests with coverage..."
+        poetry run coverage run -m pytest
+        echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+        poetry run coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📈 Coverage by File" >> $GITHUB_STEP_SUMMARY
+        poetry run coverage report --show-missing >> $GITHUB_STEP_SUMMARY

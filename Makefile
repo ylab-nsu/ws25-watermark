@@ -30,7 +30,16 @@ test: ## Run tests
 	poetry run pytest
 
 test-cov: ## Run tests with coverage report
-	poetry run pytest --cov=watermark_framework --cov-report=html --cov-report=term --cov-report=xml
+	@echo "🧪 Running tests with coverage..."
+	poetry run coverage run -m pytest
+	@echo ""
+	@echo "📊 Coverage Summary:"
+	poetry run coverage report --show-missing
+	@echo ""
+	@echo "📄 Generating HTML and XML reports..."
+	poetry run coverage html
+	poetry run coverage xml
+	@echo "✅ HTML coverage report: htmlcov/index.html"
 
 clean: ## Clean up generated files
 	rm -rf .pytest_cache/

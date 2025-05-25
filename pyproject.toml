@@ -70,3 +70,25 @@ disallow_untyped_decorators = true
 [[tool.mypy.overrides]]
 module = ["capstone", "capstone.*", "bitstruct"]
 ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["watermark_framework"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+show_missing = true
