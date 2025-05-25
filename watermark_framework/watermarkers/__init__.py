@@ -1,3 +1,4 @@
+from typing import List
 from watermark_framework.watermarkers.interface import Watermarker
 
 #### Export watermarkers for importability:
@@ -6,7 +7,7 @@ from .eq_instr.module import EquivalentInstructionWatermarker
 
 ####
 
-def get_available_strategies() -> list[str]:
+def get_available_strategies() -> List[str]:
     """Returns a list of available watermarking strategy names."""
     return list(get_watermarkers().keys())
 
