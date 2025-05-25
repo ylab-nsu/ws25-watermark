@@ -22,8 +22,9 @@ bitstruct = "^8.20.0"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.4"
 mypy = "^1.6.1"
-pytest = "^6.2.5"
+pytest = "^8.0.0"     # Update from 6.2.5 to 8.x
 pytest-cov = "^4.0.0"
+coverage = "^7.0.0"
 
 [tool.ruff]
 line-length = 120
