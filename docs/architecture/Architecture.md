@@ -11,7 +11,7 @@ Diagram below shows the architecture class diagram:
 
 ![New Architecture](./pics/Watermark_new.png)
 
-This UML was done using draw.io and is stored and can be accesed [here](./drawio/Watermark_new.drawio).
+This UML was done using [draw.io](https://app.diagrams.net/) and is stored and can be accesed [here](./drawio/Watermark_new.drawio) or using draw.io github integration.
 
 Old architecture and its flaws are described in the [Architecture Rework Report](./ArchRework.md).
 
@@ -77,7 +77,7 @@ Examples with pseudo-python code that provides better understanding of used patt
 ### Use of builtin watermarker with default configuration
 
 ```python
-from watermark_framework.core.service import WatermarkService
+from watermark_framework import WatermarkService
 from watermark_framework.watermarkers import EquivalentInstructionWatermarker
 
 svc = WatermarkService("example.elf")
@@ -94,7 +94,7 @@ print(f"Decoded: {decoded}")
 Example of **passing Watermarker instance to constructor**:
 
 ```python
-from watermark_framework.core.service import WatermarkService
+from watermark_framework import WatermarkService
 from watermark_framework.watermarkers import EquivalentInstructionWatermarker
 
 svc = WatermarkService("example.elf", EquivalentInstructionWatermarker())
@@ -111,7 +111,7 @@ print(f"Decoded: {decoded}")
 **Changing the strategy** after initialization is also possible:
 
 ```python
-from watermark_framework.core.service import WatermarkService
+from watermark_framework import WatermarkService
 from watermark_framework.watermarkers import EquivalentInstructionWatermarker, StackWatermarker
 
 svc = WatermarkService("example.elf", EquivalentInstructionWatermarker())
@@ -132,7 +132,7 @@ Because we are passing to `encode()`/`decode()` instances of `Watermarker` class
 Such as configuring equivalent instructions for `EquivalentInstructionWatermarker`:
 
 ```python
-from watermark_framework.core.service import WatermarkService
+from watermark_framework import WatermarkService
 from watermark_framework.watermarkers import EquivalentInstructionWatermarker
 
 svc = WatermarkService("example.elf")
@@ -187,7 +187,7 @@ Overview of the `TextSection` fields:
 | `vma`      | `int`           | The Virtual Memory Address (VMA) where the `.text` section is loaded in memory during execution.|
 | `offset`   | `int`           | The file offset where the `.text` section begins in the ELF binary. Used when patching the file with modified data.|
 | `size`     | `int`           | The size of the `.text` section in bytes. |
-| `arch`     | `Architecture`  | The architecture of the binary (e.g., RISC-V 64-bit, RISC-V 32-bit), represented as an enum.|
+| `arch`     | `Architecture`  | The architecture of the binary (e.g., RISC-V, X86), represented as an enum.|
 | `src_path` | `str`           | The file path of the original ELF binary, stored for reference during file writing operations.|
 
 ## Support for Multiple Architectures
@@ -206,13 +206,13 @@ Each member of `Architecture` Enum defines metadata for an architecture, includi
 
 | Attribute        | Type           | Description |
 |------------------|----------------|-------------|
-| `name`           | `str`          | Human-readable architecture name (e.g., "riscv64").|
+| `name`           | `str`          | Human-readable architecture name (e.g., "riscv").|
 | `capstone_arch`  | `int`          | Capstone architecture constant (e.g., `CS_ARCH_RISCV`).|
 | `capstone_mode`  | `int`          | Capstone mode constant (e.g., `CS_MODE_RISCV64`).|
-| `e_machine`      | `int`          | ELF machine type (e.g., `EM_RISCV`).|
+| `e_machine`      | `str`          | ELF machine type (e.g., `"EM_RISCV"`).|
 | `elf_class`      | `Optional[int]`| ELF class (32 or 64) or `None` if not applicable.|
 
-> `Architecture` also have classmethod: `from_elf(e_machine: int, elf_class: int) -> Architecture`  
+> `Architecture` also have classmethod: `from_elf(e_machine: str, elf_class: int) -> Architecture`  
 >
 > It maps ELF header values (`e_machine` and `elf_class`) to an `Architecture` member. (used by `TextSectionHandler`)
 
@@ -232,12 +232,12 @@ The Watermark framework is designed to be easily extensible, allowing users and 
 
 We’ve defined a clear policy for extending the framework with new `Watermarker` implementations, aiming for two primary audiences:
 
-- End users installing the library via pip
+- End users who use library through package manager (in future pip).
 - Developers contributing to the framework’s repository.
 
-### Extension for End Users (pip installation)
+### Extension for End Users
 
-For users who install the Watermark framework via pip, the primary way to extend the framework is by creating a custom `Watermarker` implementation and passing an instance of it to `WatermarkService`.
+For users who install the Watermark framework as package, the primary way to extend the framework is by creating a custom `Watermarker` implementation and passing an instance of it to `WatermarkService`.
 
 Guidelines for creating a custom Watermarker are provided in the [How to write a Watermarker](./../HowToWatermarker.md) document.
 
@@ -259,11 +259,13 @@ For developers contributing to the Watermark framework (e.g., those working with
    - Detailed guidelines: [How to write a Watermarker](./../HowToWatermarker.md).
 
 2. **Export the New Watermarker**:
-   - Export the new strategy in `watermark_framework/watermarkers/__init__.py` to make it accessible to users:
+   - Export the new strategy in `watermark_framework/watermarkers/__init__.py` to make it importable from in user code:
 
    ```python
    from .new_strategy import NewWatermarker
    ```
+
+   - Without manual export, still will be accesible via `get_watermarkers` in `watermark_framework/watermarkers/__init__.py`. Which dynamically collects all classes that implement the `Watermarker` interface. (this is used in implementation of CLI Layer).
 
 3. **Update Documentation**:
    - Document the new strategy in the framework’s documentation, including its purpose, configuration options, and example usage.
