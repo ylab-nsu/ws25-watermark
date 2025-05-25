@@ -98,10 +98,12 @@ jobs:
 
     - name: 🧪 Run tests with coverage
       run: |
-        echo "🧪 Running tests with coverage..."
+        echo "Running tests with coverage..."
         poetry run coverage run -m pytest
+
+        echo ""
+        echo "📊 Coverage Summary:"
+        poetry run coverage report --show-missing
+
         echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
         poetry run coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 📈 Coverage by File" >> $GITHUB_STEP_SUMMARY
-        poetry run coverage report --show-missing >> $GITHUB_STEP_SUMMARY

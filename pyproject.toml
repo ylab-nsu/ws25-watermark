@@ -81,6 +81,7 @@ omit = [
     "*/venv/*",
     "*/.venv/*",
     "*/site-packages/*",
+    "*/__init__.py",
 ]
 
 [tool.coverage.report]
@@ -92,3 +93,4 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 show_missing = true
+skip_empty = true
