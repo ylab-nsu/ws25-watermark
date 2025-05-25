@@ -1,8 +1,10 @@
 import argparse
-import sys
 import os
+import sys
+
 from watermark_framework import WatermarkService
 from watermark_framework.watermarkers import get_available_strategies, get_strategy
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Watermarking CLI for ELF binaries.")
@@ -15,21 +17,25 @@ def parse_arguments():
     parser.add_argument("-l", "--list", help="List all built-in watermarkers.", action="store_true")
     return parser.parse_args()
 
+
 def list_strategies():
     print("Available watermarking strategies:")
     for s in get_available_strategies():
         print(f" - {s}")
     sys.exit(0)
 
+
 def error(msg, exit_code=1):
     print(f"Error: {msg}", file=sys.stderr)
     sys.exit(exit_code)
+
 
 def error_with_strategies(msg):
     print(f"Error: {msg}", file=sys.stderr)
     for s in get_available_strategies():
         print(f" - {s}", file=sys.stderr)
     sys.exit(1)
+
 
 def validate_file(path):
     if not os.path.exists(path):
@@ -39,15 +45,17 @@ def validate_file(path):
     if not os.access(path, os.R_OK):
         error(f"File not readable: {path}")
 
+
 def init_service(binary, strategy_name):
     available = get_available_strategies()
     if strategy_name not in available:
         error(f"Unknown strategy '{strategy_name}'. Available strategies: {', '.join(available)}")
     try:
-        StrategyClass = get_strategy(strategy_name)
-        return WatermarkService(binary, StrategyClass())
+        strategyclass = get_strategy(strategy_name)
+        return WatermarkService(binary, strategyclass())
     except Exception as e:
         error(f"Error initializing service: {e}")
+
 
 def handle_encode(service, message, output_path):
     try:
@@ -57,6 +65,7 @@ def handle_encode(service, message, output_path):
     except Exception as e:
         error(f"Operation failed: {e}")
 
+
 def handle_decode(service):
     try:
         msg = service.decode()
@@ -65,6 +74,7 @@ def handle_decode(service):
     except Exception as e:
         error(f"Operation failed: {e}")
 
+
 def handle_capacity(service):
     try:
         cap = service.get_capacity()
@@ -72,6 +82,7 @@ def handle_capacity(service):
         sys.exit(0)
     except Exception as e:
         error(f"Operation failed: {e}")
+
 
 def main():
     args = parse_arguments()
@@ -100,6 +111,7 @@ def main():
         handle_capacity(service)
 
     error("No operation specified. Use -e, -d, -c, or -l.")
+
 
 if __name__ == "__main__":
     main()

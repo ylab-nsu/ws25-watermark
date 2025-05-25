@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 from capstone import Cs, CsInsn
 from elftools.elf.elffile import ELFFile
@@ -21,13 +20,15 @@ class TextSection:
         arch (Architecture): Architecture (e.g., X86_64, RISCV).
         src_path (str): Path to source ELF file.
     """
+
     data: bytes
-    insns: List['CsInsn']
+    insns: list["CsInsn"]
     vma: int
     offset: int
     size: int
     arch: Architecture
     src_path: str
+
 
 class TextSectionHandler:
     @staticmethod
@@ -50,33 +51,22 @@ class TextSectionHandler:
             ValueError: If no .text section is found or the architecture is unsupported.
             RuntimeError: If Capstone disassembly fails.
         """
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             elf = ELFFile(f)
-            arch = Architecture.from_elf(
-                e_machine=elf.header['e_machine'],
-                elf_class=elf.elfclass
-            )
+            arch = Architecture.from_elf(e_machine=elf.header["e_machine"], elf_class=elf.elfclass)
 
-            text_section = elf.get_section_by_name('.text')
+            text_section = elf.get_section_by_name(".text")
             if not text_section:
                 raise ValueError("No .text section found in ELF file")
             code = text_section.data()
-            addr = text_section.header['sh_addr']
-            offset = text_section.header['sh_offset']
-            size = text_section.header['sh_size']
+            addr = text_section.header["sh_addr"]
+            offset = text_section.header["sh_offset"]
+            size = text_section.header["sh_size"]
 
             capstone = Cs(arch.capstone_arch, arch.capstone_mode)
             insns = list(capstone.disasm(code, addr))
 
-            return TextSection(
-                data=code,
-                insns=insns,
-                vma=addr,
-                offset=offset,
-                size=size,
-                arch=arch,
-                src_path=path
-            )
+            return TextSection(data=code, insns=insns, vma=addr, offset=offset, size=size, arch=arch, src_path=path)
 
     @staticmethod
     def write(section: TextSection, dst: str, new_data: bytes) -> None:

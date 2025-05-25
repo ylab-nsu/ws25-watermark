@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from capstone import (
     CS_ARCH_ARM64,
@@ -24,12 +23,14 @@ class Architecture(Enum):
     - e_machine: ELF machine type string identifier(e.g., 'EM_RISCV').
     - elf_class: ELF class (32 or 64, or None for flexible architectures).
     """
-    X86_64 = ("X86_64", CS_ARCH_X86, CS_MODE_64, 'EM_X86_64', 64)
-    RISCV = ("riscv", CS_ARCH_RISCV, CS_MODE_RISCV32 | CS_MODE_RISCV64 | CS_MODE_RISCVC, 'EM_RISCV', None)
-    ARM64 = ("arm64", CS_ARCH_ARM64, CS_MODE_ARM, 'EM_AARCH64', 64)
 
-    def __init__(self, arch_name: str, capstone_arch: int, capstone_mode: int,
-                 e_machine: str, elf_class: Optional[int]):
+    X86_64 = ("X86_64", CS_ARCH_X86, CS_MODE_64, "EM_X86_64", 64)
+    RISCV = ("riscv", CS_ARCH_RISCV, CS_MODE_RISCV32 | CS_MODE_RISCV64 | CS_MODE_RISCVC, "EM_RISCV", None)
+    ARM64 = ("arm64", CS_ARCH_ARM64, CS_MODE_ARM, "EM_AARCH64", 64)
+
+    def __init__(
+        self, arch_name: str, capstone_arch: int, capstone_mode: int, e_machine: str, elf_class: int | None
+    ):
         self.arch_name = arch_name
         self.capstone_arch = capstone_arch
         self.capstone_mode = capstone_mode
@@ -37,7 +38,7 @@ class Architecture(Enum):
         self.elf_class = elf_class
 
     @classmethod
-    def from_elf(cls, e_machine: str, elf_class: int) -> 'Architecture':
+    def from_elf(cls, e_machine: str, elf_class: int) -> "Architecture":
         """
         Match ELF header values to an architecture.
 
@@ -52,7 +53,6 @@ class Architecture(Enum):
             ValueError: If no match is found.
         """
         for arch in cls:
-            if arch.e_machine == e_machine:
-                if arch.elf_class is None or arch.elf_class == elf_class:
-                    return arch
+            if arch.e_machine == e_machine and (arch.elf_class is None or arch.elf_class == elf_class):
+                return arch
         raise ValueError(f"Unsupported architecture: {e_machine}, {elf_class}")

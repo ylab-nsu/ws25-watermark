@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Set
 
 from watermark_framework.architecture import Architecture
 from watermark_framework.io import TextSection
@@ -7,7 +6,7 @@ from watermark_framework.io import TextSection
 
 class Watermarker(ABC):
     METHOD_NAME: str
-    SUPPORTED_ARCHS: Set[Architecture]
+    SUPPORTED_ARCHS: set[Architecture]
 
     @abstractmethod
     def get_nbits(self, section: TextSection) -> int:

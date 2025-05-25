@@ -1,4 +1,3 @@
-from typing import Optional
 
 from watermark_framework.io import TextSection, TextSectionHandler
 from watermark_framework.watermarkers.interface import Watermarker
@@ -14,7 +13,7 @@ class WatermarkService:
     (e.g., X86, RISCV, ARM64, ...).
     """
 
-    def __init__(self, path: str, strategy: Optional[Watermarker] = None):
+    def __init__(self, path: str, strategy: Watermarker | None = None):
         """
         Initializes the WatermarkService with an ELF file and optional strategy.
 
@@ -31,7 +30,7 @@ class WatermarkService:
                 or the strategy does not support the file's architecture.
         """
         self._section: TextSection = TextSectionHandler.load(path)
-        self._strategy: Optional[Watermarker] = None
+        self._strategy: Watermarker | None = None
         if strategy:
             self.set_strategy(strategy)
 
@@ -40,11 +39,9 @@ class WatermarkService:
         Validates that a watermarking strategy supports the current architecture.
         """
         if self._section.arch not in strategy.SUPPORTED_ARCHS:
-            raise ValueError(
-                f"Strategy {strategy.METHOD_NAME} does not support architecture {self._section.arch}"
-            )
+            raise ValueError(f"Strategy {strategy.METHOD_NAME} does not support architecture {self._section.arch}")
 
-    def _get_valid_strategy(self, strategy: Optional[Watermarker] = None) -> Watermarker:
+    def _get_valid_strategy(self, strategy: Watermarker | None = None) -> Watermarker:
         """
         Selects a valid watermarking strategy, prioritizing the provided one.
 
@@ -81,7 +78,7 @@ class WatermarkService:
             )
         self._section = new_section
 
-    def get_capacity(self, strategy: Optional[Watermarker] = None) -> int:
+    def get_capacity(self, strategy: Watermarker | None = None) -> int:
         """
         Calculates the watermarking capacity of the .text section.
 
@@ -97,7 +94,7 @@ class WatermarkService:
         selected_strategy = self._get_valid_strategy(strategy)
         return selected_strategy.get_nbits(self._section)
 
-    def encode(self, message: bytes, strategy: Optional[Watermarker] = None, dst: Optional[str] = None) -> str:
+    def encode(self, message: bytes, strategy: Watermarker | None = None, dst: str | None = None) -> str:
         """
         Encodes a watermark message into the .text section and writes the result.
 
@@ -119,16 +116,14 @@ class WatermarkService:
         capacity = selected_strategy.get_nbits(self._section)
 
         if message_bits > capacity:
-            raise ValueError(
-                f"Message size ({message_bits} bits) exceeds section capacity ({capacity} bits)"
-        )
+            raise ValueError(f"Message size ({message_bits} bits) exceeds section capacity ({capacity} bits)")
 
         new_text = selected_strategy.encode(self._section, message)
         out = dst or (self._section.src_path + ".patched")
         TextSectionHandler.write(self._section, out, new_text)
         return out
 
-    def decode(self, strategy: Optional[Watermarker] = None) -> bytes:
+    def decode(self, strategy: Watermarker | None = None) -> bytes:
         """
         Decodes a watermark message from the .text section.
 
