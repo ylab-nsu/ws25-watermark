@@ -1,13 +1,17 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
-name = "riscv_watermark"
+name = "watermark_framework"
 version = "0.0.1"
-description = "A tool to watermark RISC-V binaries"
+description = "A comprehensive framework for embedding and extracting hidden messages in ELF binary files"
 authors = ["MKSP"]
 readme = "README.md"
-packages = [{ include = "riscv_watermark" }]
+packages = [{ include = "watermark_framework" }]
 
 [tool.poetry.scripts]
-riscv-watermark = "riscv_watermark.main:main"
+watermark = "watermark_framework.cli.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -17,28 +21,47 @@ bitstruct = "^8.20.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.4"
-isort = "^5.12.0"
 mypy = "^1.6.1"
 pytest = "^6.2.5"
-
-[tool.isort]
-profile = "black"
-line_length = 110
+pytest-cov = "^4.0.0"
 
 [tool.ruff]
-line-length = 110
+line-length = 120
 target-version = "py311"
 output-format = "grouped"
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]
-ignore = []
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort (import sorting)
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "E501", # line too long (handled by formatter)
+    "B008", # do not perform function calls in argument defaults
+    "F401",
+]
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.ruff.lint.isort]
+known-first-party = ["watermark_framework"]
+force-sort-within-sections = true
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
