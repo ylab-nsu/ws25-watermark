@@ -17,29 +17,45 @@ Welcome to the comprehensive documentation for the ELF Watermarking Framework. T
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-1. **Understand the Architecture**: Read the [Architecture Documentation](./architecture/Architecture.md)
-2. **Implement a Watermarker**: Follow the [Watermarker Implementation Guide](./HowToWatermarker.md)
-3. **Follow Standards**: Use consistent code style and documentation
-4. **Test Your Changes**: Ensure all tests pass and add new tests for new features
-
-### Development Setup
+## Development Setup
 
 ```bash
-# Clone and setup development environment
-git clone https://github.com/ylab-nsu/ws25-watermark
+git clone <repository-url>
 cd ws25-watermark
-poetry install
-
-# Run tests
-python -m pytest
+poetry install --with dev
 ```
 
----
+### 🛠️ Development Tools
 
-## 📖 Additional Resources
+The project includes a comprehensive Makefile with development commands:
 
-- **[Architecture Rework Report](./architecture/ArchRework.md)** - Details about the framework redesign
+```bash
+# Installation
+make install          # Install project dependencies
+make dev-install      # Install development dependencies
+
+# Code Quality
+make format           # Format code with Ruff (auto-fix)
+make lint             # Lint code with Ruff (no auto-fix)
+make type-check       # Run type checking with mypy
+make type-check-report # Type checking with detailed error report
+
+# Testing
+make test             # Run tests
+make test-cov         # Run tests with coverage report
+
+# Maintenance
+make clean            # Clean up generated files
+make all              # Run all checks (format, lint, type-check, test)
+make ci               # Run CI checks (lint, type-check, test) - no formatting
+```
+
+### Quick Start Development Workflow
+
+```bash
+# Setup development environment
+make dev-install
+
+# Before committing changes
+make all              # Runs format, lint, type-check, and tests
+```
