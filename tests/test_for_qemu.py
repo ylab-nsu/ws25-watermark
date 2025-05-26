@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import subprocess
+from typing import Any
 
 import pytest
 
@@ -10,7 +11,7 @@ from watermark_framework.watermarkers import get_strategy
 PROJECT_ROOT = Path(__file__).parent.parent
 EXAMPLE_BINS_DIR = PROJECT_ROOT / "example_bins"
 
-TEST_PROGRAMS = {
+TEST_PROGRAMS: dict[str, dict[str, Any]] = {
     "echo.elf": {"args": ["Hello, World!"], "expected_output": "Hello, World!"},
     "cat.elf": {"args": ["test.txt"], "expected_output": "test content"},
 }
@@ -18,28 +19,30 @@ TEST_PROGRAMS = {
 SECRET_MESSAGE = "This file has been signed with watermark-framework"
 
 
-def run_qemu_test(program_path, args):
+def run_qemu_test(program_path: Path, args: list[str]) -> str:
     """
     Runs a program in QEMU and returns its output.
 
-    :param program_path: Path to the executable file
-    :type program_path: Path
-    :param args: List of command line arguments
-    :type args: List[str]
-    :return: Program output
-    :rtype: str
-    :raises: pytest.fail if program exits with error
+    Args:
+        program_path: Path to the executable file.
+        args: List of command line arguments.
+
+    Returns:
+        str: Program output.
+
+    Raises:
+        pytest.fail: If program exits with error.
     """
-    program_path = str(program_path)
-    current_mode = os.stat(program_path).st_mode
+    program_path_str = str(program_path)
+    current_mode = os.stat(program_path_str).st_mode
     if not current_mode & 0o111:
-        os.chmod(program_path, current_mode | 0o111)
+        os.chmod(program_path_str, current_mode | 0o111)
 
     cmd = [
         "qemu-riscv64",
         "-L",
         "/usr/riscv64-linux-gnu",
-        program_path,
+        program_path_str,
         *args,
     ]
 
@@ -54,14 +57,16 @@ def run_qemu_test(program_path, args):
 
 
 @pytest.mark.parametrize("program_name", TEST_PROGRAMS.keys())
-def test_program_functionality(program_name):
+def test_program_functionality(program_name: str) -> None:
     """
     Tests program functionality after watermark insertion.
 
-    :param program_name: Name of the program to test
-    :type program_name: str
-    :raises: pytest.skip if program not found
-    :raises: AssertionError if functionality is broken
+    Args:
+        program_name: Name of the program to test.
+
+    Raises:
+        pytest.skip: If program not found.
+        AssertionError: If functionality is broken.
     """
     original_program = EXAMPLE_BINS_DIR / program_name
     watermarked_program = EXAMPLE_BINS_DIR / f"{Path(program_name).stem}.watermarked.elf"
@@ -92,13 +97,10 @@ def test_program_functionality(program_name):
 
         if "expected_output" in test_data:
             assert output == test_data["expected_output"], (
-                f"Invalid program output for {program_name}. Expected: {test_data['expected_output']}, "
-                f"got: {output}"
+                f"Invalid program output for {program_name}. Expected: {test_data['expected_output']}, got: {output}"
             )
         elif "expected_output_check" in test_data:
-            assert test_data["expected_output_check"](output), (
-                f"Output check failed for program {program_name}"
-            )
+            assert test_data["expected_output_check"](output), f"Output check failed for program {program_name}"
 
     finally:
         if watermarked_program.exists():

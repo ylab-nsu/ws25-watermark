@@ -1,6 +1,6 @@
 # Development Makefile for ELF Watermarking Framework
 
-.PHONY: help install dev-install format lint type-check test test-cov clean all ci
+.PHONY: help install dev-install format lint type-check test test-cov test-qemu clean all ci
 
 help: ## Show this help message
 	@echo "🔧 ELF Watermarking Framework - Development Commands"
@@ -27,11 +27,11 @@ type-check-report: ## Run type checking with detailed error report
 	poetry run mypy watermark_framework/ --show-error-codes --pretty
 
 test: ## Run tests
-	poetry run pytest
+	poetry run pytest --ignore=tests/test_for_qemu.py
 
 test-cov: ## Run tests with coverage report
 	@echo "🧪 Running tests with coverage..."
-	poetry run coverage run -m pytest
+	poetry run coverage run -m pytest --ignore=tests/test_for_qemu.py
 	@echo ""
 	@echo "📊 Coverage Summary:"
 	poetry run coverage report --show-missing
