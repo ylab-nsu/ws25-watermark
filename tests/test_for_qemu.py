@@ -80,7 +80,7 @@ def test_program_functionality(program_name):
         test_file.write_text("test content")
 
     try:
-        watermarker = get_strategy("equal_funcs")()
+        watermarker = get_strategy("EQ_INSTR")()
         service = WatermarkService(str(original_program), watermarker)
 
         available_bits = service.get_capacity()
