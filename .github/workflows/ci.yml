@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
     
     steps:
     - name: 📥 Checkout code
@@ -42,7 +42,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
     
     steps:
     - name: 📥 Checkout code
@@ -75,7 +75,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
     
     steps:
     - name: 📥 Checkout code
@@ -114,7 +114,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.11" ,"3.12", "3.13"]
     
     steps:
     - name: 📥 Checkout code
@@ -139,10 +139,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y qemu-system-riscv64 qemu-user libc6-riscv64-cross gcc-riscv64-linux-gnu
-        # Create symlink for RISC-V libraries
         sudo mkdir -p /usr/riscv64-linux-gnu/lib
         sudo ln -s /usr/riscv64-linux-gnu/lib/ld-linux-riscv64-lp64d.so.1 /lib/ld-linux-riscv64-lp64d.so.1
-        # Set QEMU_LD_PREFIX
         echo "QEMU_LD_PREFIX=/usr/riscv64-linux-gnu" >> $GITHUB_ENV
 
     - name: 🔍 Check binary files
