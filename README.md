@@ -1,114 +1,91 @@
-# 🚀 Watermark RISC-V
+# 🔐 ELF Watermarking Framework
 
-**🔍 Python tool for embedding hidden messages in RISC-V ELF binaries**  
+A comprehensive framework for embedding and extracting hidden messages in ELF binary files using multiple watermarking strategies.
 
----
+## 🎯 How It Works
 
-## 🛠 Installation
-
-```bash
-git clone https://github.com/ylab-nsu/ws25-watermark
-cd ws25-watermark
-pip install -e .
+```mermaid
+graph LR
+    subgraph "🔐 Encoding Process"
+        A[📄 ELF Binary<br/>example.elf] --> B[⚙️ Framework<br/>WatermarkService]
+        C[💭 Secret Message<br/>Hello World] --> B
+        
+        subgraph "🎭 Strategy Selection"
+            S1[🔧 EQ_INSTR<br/>Equivalent Instructions]
+            S3[➕ Custom<br/>Your Strategy]
+        end
+        
+        B --> S1
+        S1 --> D[✅ Watermarked Binary<br/>example.elf.patched]
+    end
+    
+    subgraph "🔍 Decoding Process"
+        D -.-> E[⚙️ Framework<br/>Same Strategy]
+        E -.-> F[📤 Extracted Message<br/>Hello World]
+    end
+    
+    style A fill:#e3f2fd, color:#000
+    style C fill:#fff8e1, color:#000
+    style B fill:#e8f5e8, color:#000
+    style S1 fill:#f3e5f5, color:#000
+    style S3 fill:#f0f0f0, color:#000
+    style D fill:#e8f5e8, color:#000
+    style E fill:#e8f5e8, color:#000
+    style F fill:#fff8e1, color:#000
+    style S1 stroke:#673ab7, stroke-width:2px
+    style S3 stroke:#9e9e9e, stroke-width:2px
 ```
 
----
-
-## 🎯 Usage
-
-### 🔹 Encoding Messages
+## 🚀 Quick Start
 
 ```bash
-riscv-watermark -e "your_message" -m method_name elf_file [-o output_file]
+# Install dependencies
+poetry install
+
+# Install the framework
+pip install .
+
+# Example usage
+watermark example.elf -e secret -s EQ_INSTR
+# Encoding successful. Modified binary saved to ./example.elf.patched 
+watermark example.elf.patched -d -s EQ_INSTR
+# Decoded message: secret
 ```
 
-### 🔹 Decoding Messages
+## 📚 Documentation
 
-```bash
-riscv-watermark -d -m method_name patched_elf_file
+- **[📖 Complete Documentation](./docs/README.md)** - Start here for comprehensive guides
+- **[🏗️ Architecture Overview](./docs/architecture/Architecture.md)** - Framework design and components  
+- **[🔧 How to Implement a Watermarker](./docs/HowToWatermarker.md)** - Developer guide for custom strategies
+- **[🔄 Architecture Rework Report](./docs/architecture/ArchRework.md)** - Migration from old to new design
+
+## ✨ Features
+
+- **Multi-Architecture Support**: Easy to adapt for different ELF architectures
+- **Extensible Design**: Easy to add new watermarking algorithms
+- **Strategy Pattern**: Clean separation between framework core and watermarking logic
+- **CLI & Library Interface**: Use from command line or integrate into Python projects
+
+## 🛠️ Built With
+
+- **Python 3.11+** - Core framework
+- **Capstone** - Disassembly engine
+- **PyELFTools** - ELF file parsing
+
+## 📋 Project Structure
+
+```
+watermark_framework/
+├── __init__.py          # Main exports
+├── core/               # Core service layer
+├── io/                 # ELF file handling
+├── watermarkers/       # Watermarking strategies
+├── cli/                # Command-line interface
+└── architecture.py     # Architecture definitions
 ```
 
-### 🔹 Checking Encoding Capacity
+## 🤝 Contributing
 
-Check the maximum number of bits that can be encoded using a specific method:
-
-```bash
-riscv-watermark -g -m method_name elf_file
-```
-
-### Example
-
-```bash
-$ riscv-watermark -e "Hello" -m equal_funcs example_bins/example.elf
-23:32 - INFO - riscv_watermark.main - Available max bit capacity: 42 bits
-23:32 - INFO - riscv_watermark.main - Message size: 40 bits
-23:32 - INFO - riscv_watermark.encoder - Successfully encoded message using EquivalentInstructionWatermarker
-23:32 - INFO - riscv_watermark.main - Creating patched file: example_bins/example.elf.patched
-23:32 - INFO - riscv_watermark.main - Message successfully encoded in example_bins/example.elf.patched
-
-$ riscv-watermark -d -m equal_funcs example_bins/example.elf.patched
-Decoded message: Hello
-25:15 - INFO - riscv_watermark.main - Message successfully decoded
-
-$ riscv-watermark -g -m equal_funcs,stack example_bins/sqlite3.elf
-26:50 - INFO - riscv_watermark.main - Available bits for EquivalentInstructionWatermarker: 5696 (712 characters)
-26:50 - INFO - riscv_watermark.main - Available bits for StackWatermarker: 0 (0 characters)
-```
-
----
-
-## 🧩 How It Works
-
-The program embeds hidden messages by replacing machine instructions with their functionally equivalent counterparts, thereby modifying the binary code without changing the program's behavior.
-
-### 🔹 Equivalent Instruction Technique
-
-The primary watermarking method (`equal_funcs`) works by substituting machine instructions with functionally equivalent alternatives:
-
-| Original Instruction | Equivalent Replacement | Bit Encoding |
-|----------------------|------------------------|--------------|
-| `addi rd, rs1, 0`    | `add rd, rs1, x0`      | 0            |
-| `add rd, rs1, x0`    | `addi rd, rs1, 0`      | 1            |
-| `c.nop`              | `c.or x8, x8`          | 01           |
-| `c.nop`              | `c.andi x8, 0b011111`  | 10           |
-| `c.nop`              | `c.and x8, x8`         | 11           |
-
-Each substitution encodes specific bit patterns (0/1 for add/addi replacements, and 2-bit patterns for c.nop replacements), allowing messages to be hidden within the instruction stream.
-
----
-
-## 🔥 Development Roadmap
-
-Currently, the project has one fully-implemented watermarking method based on instruction replacement. Future development includes:
-
-- [ ] Finish code refactoring
-- [ ] Stack Frame Modification: A new module that will encode information by altering stack frame sizes.
-- [ ] Binary Data Support: Adding support for encoding arbitrary binary data
-- [ ] Robustness Testing: Ensuring watermarks survive optimization and binary manipulation
-- [ ] More Watermarking Techniques: Research and implementation of additional steganographic methods
-
----
-
-## 🏎️ Performance Impact
-
-Benchmarks show that replacing instructions with functionally equivalent alternatives has negligible impact on execution speed in most real-world applications.
-
-![Watermark RISC-V](https://i.imgur.com/QVnxOlj.png)
-
----
-
-## 💡 Additional information
-
-- The project is specifically designed for RISC-V ELF binaries
-- Written in Python with minimal external dependencies
-
----
-
-## 👨‍💻 Authors & Contacts
-
-- 📌 Developed within the **YLab NSU** framework
-
----
-
-**🔗 Project repository:**  
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Watermark%20RISC--V-blue?style=for-the-badge&logo=github)](https://github.com/ylab-nsu/ws25-watermark)
+1. Read the [Architecture Documentation](./docs/architecture/Architecture.md) to understand the framework
+2. Check the [How to Implement a Watermarker](./docs/HowToWatermarker.md) guide for adding new strategies
+3. Follow the existing code patterns and documentation standards

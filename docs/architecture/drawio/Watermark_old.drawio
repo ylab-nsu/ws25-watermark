@@ -1,0 +1,222 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:138.0) Gecko/20100101 Firefox/138.0" version="27.0.5">
+  <diagram name="Page-1" id="eA6vmbURIXxnvVn_YIwM">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="2339" pageHeight="3300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-104" value="riscv_watermark" style="swimlane;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;arcSize=15;strokeWidth=1;swimlaneFillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="200" y="440" width="640" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-97" value="&lt;span style=&quot;color: rgb(0, 153, 0);&quot;&gt;&amp;lt;&amp;lt;Class&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;Encoder&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;fillColor=#F2F2F2;swimlaneFillColor=#F2F2F2;swimlaneLine=1;strokeColor=#7B8691;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-104">
+          <mxGeometry x="360" y="50" width="180" height="100" as="geometry">
+            <mxRectangle x="530" y="920" width="110" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-98" value="&lt;span style=&quot;font-size:125%;line-height:1em&quot;&gt;&lt;span style=&quot;color: rgb(0, 204, 0);&quot;&gt;⦿&lt;/span&gt;&lt;/span&gt; encode() -&amp;gt; bytes" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-97">
+          <mxGeometry y="40" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-99" value="&lt;span style=&quot;font-size:125%;line-height:1em&quot;&gt;&lt;span style=&quot;color: rgb(0, 204, 0);&quot;&gt;⦿&lt;/span&gt;&lt;/span&gt; can_encode() -&amp;gt; bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-97">
+          <mxGeometry y="70" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-89" value="&lt;span style=&quot;color: rgb(0, 127, 255);&quot;&gt;&amp;lt;&amp;lt;Source&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;main.py&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;fillColor=#F2F2F2;swimlaneFillColor=#F2F2F2;swimlaneLine=1;strokeColor=#7B8691;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-104">
+          <mxGeometry x="20" y="70" width="230" height="250" as="geometry">
+            <mxRectangle x="530" y="920" width="110" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-96" value="&lt;div&gt;&lt;div class=&quot;result888&quot;&gt;⦿ main()&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;spacing=2;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-89">
+          <mxGeometry y="40" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-90" value="&lt;div&gt;&lt;div class=&quot;result888&quot;&gt;⦿ parse_arguments()&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;spacing=2;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-89">
+          <mxGeometry y="70" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-93" value="⦿ validate_file()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-89">
+          <mxGeometry y="100" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-95" value="⦿ encode_message()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-89">
+          <mxGeometry y="130" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-94" value="⦿ decode_message()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-89">
+          <mxGeometry y="160" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-92" value="⦿ get_available_bits()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-89">
+          <mxGeometry y="190" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-91" value="⦿ get_watermarkers()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;spacing=2;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-89">
+          <mxGeometry y="220" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-105" value="&lt;span style=&quot;color: rgb(0, 153, 0);&quot;&gt;&amp;lt;&amp;lt;Class&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;Decoder&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;fillColor=#F2F2F2;swimlaneFillColor=#F2F2F2;swimlaneLine=1;strokeColor=#7B8691;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-104">
+          <mxGeometry x="340" y="228" width="220" height="70" as="geometry">
+            <mxRectangle x="530" y="920" width="110" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-106" value="&lt;span style=&quot;font-size:125%;line-height:1em&quot;&gt;&lt;span style=&quot;color: rgb(0, 204, 0);&quot;&gt;⦿&lt;/span&gt;&lt;/span&gt; decode() -&amp;gt; Dict[str, str]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-105">
+          <mxGeometry y="40" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-131" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="tbiwmp9lunx3XJ8VPugq-104" source="tbiwmp9lunx3XJ8VPugq-95">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="70" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="305" y="215" />
+              <mxPoint x="305" y="70" />
+              <mxPoint x="360" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-141" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="tbiwmp9lunx3XJ8VPugq-104" source="tbiwmp9lunx3XJ8VPugq-94" target="tbiwmp9lunx3XJ8VPugq-105">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-162" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.007;entryY=0.303;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="tbiwmp9lunx3XJ8VPugq-104" source="tbiwmp9lunx3XJ8VPugq-92" target="tbiwmp9lunx3XJ8VPugq-97">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="275" />
+              <mxPoint x="280" y="80" />
+              <mxPoint x="359" y="80" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-108" value="riscv_watermark.watermarkers" style="swimlane;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;arcSize=15;strokeWidth=1;swimlaneFillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="890" y="440" width="810" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-122" value="&lt;span style=&quot;color: rgb(153, 51, 255);&quot;&gt;&amp;lt;&amp;lt;Interface&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;Watermarker&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;fillColor=#F2F2F2;swimlaneFillColor=#F2F2F2;swimlaneLine=1;strokeColor=#7B8691;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-108">
+          <mxGeometry x="40" y="50" width="280" height="160" as="geometry">
+            <mxRectangle x="530" y="920" width="110" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-123" value="&lt;span style=&quot;font-size:125%;line-height:1em&quot;&gt;&lt;span style=&quot;color: rgb(0, 204, 0);&quot;&gt;⦿&lt;/span&gt;&lt;/span&gt; encode(filename, message) -&amp;gt; bytes" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-122">
+          <mxGeometry y="40" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-126" value="&lt;span style=&quot;font-size:125%;line-height:1em&quot;&gt;&lt;span style=&quot;color: rgb(0, 204, 0);&quot;&gt;⦿&lt;/span&gt;&lt;/span&gt; decode(filename) -&amp;gt; str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-122">
+          <mxGeometry y="70" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-127" value="&lt;span style=&quot;font-size:125%;line-height:1em&quot;&gt;&lt;span style=&quot;color: rgb(0, 204, 0);&quot;&gt;⦿&lt;/span&gt;&lt;/span&gt; get_nbits(filename) -&amp;gt; int:" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-122">
+          <mxGeometry y="100" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-128" value="&lt;span style=&quot;font-size:125%;line-height:1em&quot;&gt;&lt;span style=&quot;&quot;&gt;⦿&lt;/span&gt;&lt;/span&gt; disassembly(filename)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;fontStyle=1;fontColor=#FF0000;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-122">
+          <mxGeometry y="130" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-124" value="&lt;span style=&quot;color: rgb(0, 127, 255);&quot;&gt;&amp;lt;&amp;lt;Source&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;factory.py&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;fillColor=#F2F2F2;swimlaneFillColor=#F2F2F2;swimlaneLine=1;strokeColor=#7B8691;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-108">
+          <mxGeometry x="150" y="240" width="260" height="100" as="geometry">
+            <mxRectangle x="530" y="920" width="110" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-125" value="⦿ fget_watermarker(name)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-124">
+          <mxGeometry y="40" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-129" value="⦿ get_available_methods() -&amp;gt; list" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-124">
+          <mxGeometry y="70" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-150" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=none;endFill=0;dashed=1;dashPattern=12 12;startFill=0;" edge="1" parent="tbiwmp9lunx3XJ8VPugq-108" source="tbiwmp9lunx3XJ8VPugq-143">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450" y="70" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="460" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-143" value="&lt;span style=&quot;color: rgb(0, 153, 0);&quot;&gt;&amp;lt;&amp;lt;Class&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;EqualInstructionWatremarker&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;fillColor=#F2F2F2;swimlaneFillColor=#F2F2F2;swimlaneLine=1;strokeColor=#7B8691;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-108">
+          <mxGeometry x="350" y="130" width="220" height="70" as="geometry">
+            <mxRectangle x="530" y="920" width="110" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-144" value="&lt;div align=&quot;center&quot;&gt;...&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-143">
+          <mxGeometry y="40" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-151" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=block;endFill=0;dashed=1;dashPattern=12 12;endSize=11;" edge="1" parent="tbiwmp9lunx3XJ8VPugq-108" source="tbiwmp9lunx3XJ8VPugq-146" target="tbiwmp9lunx3XJ8VPugq-122">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-146" value="&lt;span style=&quot;color: rgb(0, 153, 0);&quot;&gt;&amp;lt;&amp;lt;Class&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;StackWatermarker&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;fillColor=#F2F2F2;swimlaneFillColor=#F2F2F2;swimlaneLine=1;strokeColor=#7B8691;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-108">
+          <mxGeometry x="580" y="130" width="220" height="70" as="geometry">
+            <mxRectangle x="530" y="920" width="110" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-147" value="&lt;div align=&quot;center&quot;&gt;...&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;rounded=1;swimlaneLine=1;" vertex="1" parent="tbiwmp9lunx3XJ8VPugq-146">
+          <mxGeometry y="40" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-148" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="tbiwmp9lunx3XJ8VPugq-108" source="tbiwmp9lunx3XJ8VPugq-125" target="tbiwmp9lunx3XJ8VPugq-143">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-149" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="tbiwmp9lunx3XJ8VPugq-108" source="tbiwmp9lunx3XJ8VPugq-125" target="tbiwmp9lunx3XJ8VPugq-146">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-152" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=JetBrains+Mono&quot; face=&quot;JetBrains Mono&quot;&gt;instantiate by name&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="tbiwmp9lunx3XJ8VPugq-149">
+          <mxGeometry x="-0.147" y="-2" relative="1" as="geometry">
+            <mxPoint x="-10" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-136" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="tbiwmp9lunx3XJ8VPugq-95" target="tbiwmp9lunx3XJ8VPugq-160">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="655" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-137" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="tbiwmp9lunx3XJ8VPugq-91" target="tbiwmp9lunx3XJ8VPugq-129">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="900" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="480" y="745" />
+              <mxPoint x="480" y="765" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-138" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="tbiwmp9lunx3XJ8VPugq-98" target="tbiwmp9lunx3XJ8VPugq-123">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-139" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="tbiwmp9lunx3XJ8VPugq-106" target="tbiwmp9lunx3XJ8VPugq-126">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="800" y="723" />
+              <mxPoint x="800" y="575" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-142" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="tbiwmp9lunx3XJ8VPugq-97" target="tbiwmp9lunx3XJ8VPugq-127">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="510" />
+              <mxPoint x="860" y="605" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-154" value="ELFFile&lt;br&gt;(pyelftools)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;fontStyle=1;fontColor=#FF0000;" vertex="1" parent="1">
+          <mxGeometry x="850" y="890" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-153" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="910" y="890" as="targetPoint" />
+            <mxPoint x="940" y="635.037037037037" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="910" y="635" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-156" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="tbiwmp9lunx3XJ8VPugq-128" target="tbiwmp9lunx3XJ8VPugq-158">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1000" y="890" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="910" y="635" />
+              <mxPoint x="910" y="840" />
+              <mxPoint x="1010" y="840" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-158" value="Cs&lt;br&gt;(capstone)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;" vertex="1" parent="1">
+          <mxGeometry x="960" y="890" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tbiwmp9lunx3XJ8VPugq-160" value="ELFFile&lt;br&gt;(pyelftools)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fontFamily=JetBrains Mono;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DJetBrains%2BMono;fontColor=#FF0000;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="30" y="625" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5dbnMc0RqgyxFfcfSCDQ-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="tbiwmp9lunx3XJ8VPugq-91" target="tbiwmp9lunx3XJ8VPugq-125">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="930" y="745" />
+              <mxPoint x="930" y="735" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
