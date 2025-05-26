@@ -6,7 +6,7 @@ import subprocess
 import pytest
 
 from watermark_framework.core.service import WatermarkService
-from watermark_framework.watermarkers import fget_watermarker
+from watermark_framework.watermarkers import get_strategy
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -80,7 +80,7 @@ def test_program_functionality(program_name):
         test_file.write_text("test content")
 
     try:
-        watermarker = fget_watermarker("equal_funcs")
+        watermarker = get_strategy("equal_funcs")()
         service = WatermarkService(str(original_program), watermarker)
 
         available_bits = service.get_capacity()
