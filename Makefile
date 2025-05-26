@@ -1,6 +1,6 @@
 # Development Makefile for ELF Watermarking Framework
 
-.PHONY: help install dev-install format lint type-check test test-cov test-qemu clean all ci
+.PHONY: help install dev-install format lint type-check test test-cov clean all ci
 
 help: ## Show this help message
 	@echo "🔧 ELF Watermarking Framework - Development Commands"
