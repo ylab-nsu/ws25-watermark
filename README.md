@@ -89,3 +89,9 @@ watermark_framework/
 1. Read the [Architecture Documentation](./docs/architecture/Architecture.md) to understand the framework
 2. Check the [How to Implement a Watermarker](./docs/HowToWatermarker.md) guide for adding new strategies
 3. Follow the existing code patterns and documentation standards
+
+## 📊 Testing & Coverage
+
+- **CI runs comprehensive tests** on Python 3.11, 3.12, and 3.13
+- **Coverage reports** are generated on each CI run with summary tables and downloadable HTML artifacts
+- **Download detailed coverage**: Go to [![CI](https://github.com/ylab-nsu/ws25-watermark/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ylab-nsu/ws25-watermark/actions/workflows/ci.yml) → Latest CI run → Download coverage-report artifact

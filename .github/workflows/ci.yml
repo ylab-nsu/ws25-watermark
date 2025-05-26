@@ -132,8 +132,18 @@ jobs:
         echo "📊 Coverage Summary:"
         poetry run coverage report --show-missing
 
+        echo "Generating HTML coverage report..."
+        poetry run coverage html --directory=coverage-html
+
         echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
         poetry run coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+
+    - name: 📤 Upload coverage HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage-html/
+        retention-days: 30
 
   qemu-tests:
     name: 🖥️ QEMU Tests
