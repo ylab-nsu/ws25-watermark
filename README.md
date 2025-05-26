@@ -24,14 +24,16 @@ graph LR
         E -.-> F[📤 Extracted Message<br/>Hello World]
     end
     
-    style A fill:#e3f2fd
-    style C fill:#fff8e1
-    style B fill:#e8f5e8
-    style S1 fill:#f3e5f5
-    style S3 fill:#f0f0f0
-    style D fill:#e8f5e8
-    style E fill:#e8f5e8
-    style F fill:#fff8e1
+    style A fill:#e3f2fd, color:#000
+    style C fill:#fff8e1, color:#000
+    style B fill:#e8f5e8, color:#000
+    style S1 fill:#f3e5f5, color:#000
+    style S3 fill:#f0f0f0, color:#000
+    style D fill:#e8f5e8, color:#000
+    style E fill:#e8f5e8, color:#000
+    style F fill:#fff8e1, color:#000
+    style S1 stroke:#673ab7, stroke-width:2px
+    style S3 stroke:#9e9e9e, stroke-width:2px
 ```
 
 ## 🚀 Quick Start

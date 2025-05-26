@@ -22,10 +22,14 @@ graph TD
     D --> D1[Simple if-else<br/>2-3 Architectures]
     D --> D2[Handler Registry<br/>5+ Architectures]
     
-    style A fill:#e1f5fe
-    style B fill:#f3e5f5
-    style C fill:#e8f5e8
-    style D fill:#fff3e0
+    style A fill:#e1f5fe, color:#000
+    style B fill:#f3e5f5, color:#000
+    style C fill:#e8f5e8, color:#000
+    style D fill:#fff3e0, color:#000
+    style A stroke:#2196f3, stroke-width:2px
+    style B stroke:#673ab7, stroke-width:2px
+    style C stroke:#4caf50, stroke-width:2px
+    style D stroke:#ff9800, stroke-width:2px
 ```
 
 ## 📋 Prerequisites
@@ -65,12 +69,18 @@ graph TD
     WS --> TSH
     TSH --> OUTPUT
     
-    style YW fill:#ffcccb
-    style WS fill:#add8e6
-    style TSH fill:#98fb98
-    style TS fill:#f0e68c
-    style ELF fill:#d3d3d3
-    style OUTPUT fill:#90ee90
+    style YW fill:#ffcccb, color:#000
+    style WS fill:#add8e6, color:#000
+    style TSH fill:#98fb98, color:#000
+    style TS fill:#f0e68c, color:#000
+    style ELF fill:#d3d3d3, color:#000
+    style OUTPUT fill:#90ee90, color:#000
+    style YW stroke:#f44336, stroke-width:2px
+    style WS stroke:#2196f3, stroke-width:2px
+    style TSH stroke:#4caf50, stroke-width:2px
+    style TS stroke:#ff9800, stroke-width:2px
+    style ELF stroke:#9e9e9e, stroke-width:2px
+    style OUTPUT stroke:#8bc34a, stroke-width:2px
 ```
 
 ## 🚀 Step 1: Create a New Class
@@ -94,16 +104,16 @@ Your watermarker must implement the following three methods defined by the [`Wat
 
 ### `encode(self, section: TextSection, message: bytes) -> bytes`
 
-This method encodes the provided message (in bytes) into the `.text` section represented by the [`TextSection`](../watermark_framework/io/section_handler.py) object. It should return the modified `.text` section data as bytes.
+This method encodes the provided message (in bytes) using data from the `.text` section. It **reads** from the `TextSection` object and **returns** modified section data as bytes.
 
-- **Input**: `section` provides access to disassembled instructions (`section.insns`) and raw data (`section.data`)
-- **Output**: The modified `.text` section data with the message embedded
+- **Input**: `section` provides read-only access to disassembled instructions (`section.insns`) and raw data (`section.data`)
+- **Output**: New modified `.text` section data with the message embedded
 
 ### `decode(self, section: TextSection) -> bytes`
 
-This method extracts and returns the hidden message from the `.text` section provided in `section`.
+This method extracts and returns the hidden message by **reading** from the `.text` section.
 
-- **Input**: The [`TextSection`](../watermark_framework/io/section_handler.py) object containing the watermarked `.text` section
+- **Input**: The `TextSection` object containing the watermarked `.text` section (read-only)
 - **Output**: The decoded message in bytes
 
 ### `get_nbits(self, section: TextSection) -> int`
@@ -143,16 +153,16 @@ sequenceDiagram
     
     User->>WS: encode("secret", watermarker)
     WS->>YW: get_nbits(section)
-    YW->>TS: analyze section.insns/data
+    YW->>TS: read section.insns/data
     TS-->>YW: capacity info
     YW-->>WS: available bits
     
     WS->>YW: encode(section, message)
-    YW->>TS: modify section.data
-    YW-->>WS: modified bytes
+    YW->>TS: read section.data
+    YW-->>WS: modified bytes (new data)
     WS-->>User: patched file path
     
-    Note over User,TS: Decoding follows similar pattern<br/>with decode() method
+    Note over User,TS: TextSection is read-only<br/>Watermarker returns modified bytes
 ```
 
 ## 🏷️ Step 3: Set Class Attributes
@@ -184,6 +194,8 @@ class MyWatermarker(Watermarker):
 
 > [!NOTE]
 > The framework uses dynamic discovery, so as long as your class is a subclass of [`Watermarker`](../watermark_framework/watermarkers/interface.py) and resides in the [`watermarkers/`](../watermark_framework/watermarkers/) directory, it will be automatically detected—no additional registration is needed.
+>
+> But if you want to be make your watermarker importable, you can add it to the `__init__.py` file in the `watermarkers/` directory.
 
 ## 📦 Data Conventions
 
