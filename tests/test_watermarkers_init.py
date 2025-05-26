@@ -6,50 +6,107 @@ from watermark_framework.watermarkers import (
     get_strategy,
     get_watermarkers,
 )
-from watermark_framework.watermarkers.eq_instr.module import EquivalentInstructionWatermarker
+from watermark_framework.architecture import Architecture
 
 
-def test_get_available_strategies():
+@pytest.fixture
+def mock_watermarkers(monkeypatch):
+    """Create mock watermarkers for testing with proper cleanup."""
+    class TestWatermarker1(Watermarker):
+        METHOD_NAME = "TEST_METHOD_1"
+        SUPPORTED_ARCHS = {Architecture.X86_64}
+
+        def get_nbits(self, section):
+            return 8
+
+        def encode(self, section, message):
+            return b""
+
+        def decode(self, section):
+            return b"test"
+    class TestWatermarker2(Watermarker):
+        METHOD_NAME = "TEST_METHOD_2"
+        SUPPORTED_ARCHS = {Architecture.RISCV}
+
+        def get_nbits(self, section):
+            return 16
+
+        def encode(self, section, message):
+            return b""
+
+        def decode(self, section):
+            return b"test2"
+
+    monkeypatch.setattr(Watermarker, '__subclasses__', 
+                       lambda: [TestWatermarker1, TestWatermarker2])
+    
+    return TestWatermarker1, TestWatermarker2
+
+
+def test_get_available_strategies(mock_watermarkers):
     """Test getting list of available strategies."""
     strategies = get_available_strategies()
     assert isinstance(strategies, list)
-    assert "EQ_INSTR" in strategies
-    assert len(strategies) > 0
+    assert len(strategies) == 2
+    assert "TEST_METHOD_1" in strategies
+    assert "TEST_METHOD_2" in strategies
 
 
-def test_get_strategy():
+def test_get_strategy(mock_watermarkers):
     """Test getting strategy by name."""
-    # Test getting existing strategy
-    strategy = get_strategy("EQ_INSTR")
-    assert strategy == EquivalentInstructionWatermarker
+    TestWatermarker1, TestWatermarker2 = mock_watermarkers
+    
+    strategy1 = get_strategy("TEST_METHOD_1")
+    assert strategy1 == TestWatermarker1
+    
+    strategy2 = get_strategy("TEST_METHOD_2")
+    assert strategy2 == TestWatermarker2
 
-    # Test getting non-existent strategy
     with pytest.raises(ValueError, match="Unknown strategy"):
         get_strategy("NON_EXISTENT")
 
 
-def test_get_watermarkers():
+def test_get_watermarkers(mock_watermarkers):
     """Test getting dictionary of available watermarkers."""
+    TestWatermarker1, TestWatermarker2 = mock_watermarkers
+    
     watermarkers = get_watermarkers()
     assert isinstance(watermarkers, dict)
-    assert "EQ_INSTR" in watermarkers
-    assert watermarkers["EQ_INSTR"] == EquivalentInstructionWatermarker
+    assert len(watermarkers) == 2
+    assert "TEST_METHOD_1" in watermarkers
+    assert "TEST_METHOD_2" in watermarkers
+    assert watermarkers["TEST_METHOD_1"] == TestWatermarker1
+    assert watermarkers["TEST_METHOD_2"] == TestWatermarker2
 
 
-def test_duplicate_method_name():
-    """Test detection of duplicate METHOD_NAME in watermarkers."""
-    class DuplicateWatermarker(Watermarker):
-        METHOD_NAME = "EQ_INSTR"
-        SUPPORTED_ARCHS = ["x86_64"]
+def test_duplicate_method_name(monkeypatch):
+    class DuplicateWatermarker1(Watermarker):
+        METHOD_NAME = "DUPLICATE"
+        SUPPORTED_ARCHS = {Architecture.X86_64}
 
         def get_nbits(self, section):
             return 0
 
         def encode(self, section, message):
-            return section
+            return b""
 
         def decode(self, section):
             return b""
+    class DuplicateWatermarker2(Watermarker):
+        METHOD_NAME = "DUPLICATE"
+        SUPPORTED_ARCHS = {Architecture.RISCV}
+
+        def get_nbits(self, section):
+            return 0
+
+        def encode(self, section, message):
+            return b""
+
+        def decode(self, section):
+            return b""
+
+    monkeypatch.setattr(Watermarker, '__subclasses__', 
+                       lambda: [DuplicateWatermarker1, DuplicateWatermarker2])
 
     with pytest.raises(ValueError, match="Duplicate METHOD_NAME"):
         get_watermarkers()
