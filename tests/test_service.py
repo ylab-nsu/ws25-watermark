@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 import pytest
 
 from watermark_framework.core.service import WatermarkService
@@ -100,7 +101,7 @@ def test_encode_decode(service, tmp_path):
 
     # Test message
     message = b"Test"
-    
+
     # Test encoding
     output_path = str(tmp_path / "output.elf")
     encoded_path = service.encode(message, dst=output_path)
@@ -114,4 +115,4 @@ def test_encode_decode(service, tmp_path):
     # Test message too large
     large_message = b"x" * (service.get_capacity() + 1)
     with pytest.raises(ValueError, match="exceeds section capacity"):
-        service.encode(large_message) 
+        service.encode(large_message)
