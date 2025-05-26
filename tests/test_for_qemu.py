@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 import subprocess
@@ -7,9 +6,6 @@ import pytest
 
 from watermark_framework.core.service import WatermarkService
 from watermark_framework.watermarkers import get_strategy
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 EXAMPLE_BINS_DIR = PROJECT_ROOT / "example_bins"
@@ -87,8 +83,6 @@ def test_program_functionality(program_name):
         max_chars = available_bits // 8
 
         truncated_message = SECRET_MESSAGE[:max_chars]
-        logger.info(f"Available capacity: {available_bits} bits ({max_chars} chars)")
-        logger.info(f"Message to encode: '{truncated_message}' (Length: {len(truncated_message)})")
 
         service.encode(truncated_message.encode(), dst=str(watermarked_program))
 
