@@ -1,44 +1,109 @@
-name: CI
+name: 🔍 CI Pipeline
 
-on: push
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
-    name: Check with linters
-    permissions: 
-      pull-requests: write
+    name: 🏗️ Build & Dependencies
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: latest
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-      - name: Install dependencies
-        run: poetry install --no-interaction
-      - name: Run Lint Check
-        run: poetry run make check
-      - name: Run Tests
-        run: poetry run pytest riscv_watermark/tests/test_main.py
-      - name: Install QEMU and RISC-V libraries
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-system-riscv64 qemu-user libc6-riscv64-cross gcc-riscv64-linux-gnu
-          # Create symlink for RISC-V libraries
-          sudo mkdir -p /usr/riscv64-linux-gnu/lib
-          sudo ln -s /usr/riscv64-linux-gnu/lib/ld-linux-riscv64-lp64d.so.1 /lib/ld-linux-riscv64-lp64d.so.1
-          # Set QEMU_LD_PREFIX
-          echo "QEMU_LD_PREFIX=/usr/riscv64-linux-gnu" >> $GITHUB_ENV
-      - name: Check binary files
-        run: |
-          # Make sure all binaries are executable
-          chmod +x example_bins/*.elf
-      - name: Build and Test with QEMU
-        run: |
-          poetry run pytest riscv_watermark/tests/test_programs_functionality.py -v
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 📦 Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: 🔧 Install dependencies
+      run: make dev-install
+
+    - name: ✅ Verify installation
+      run: poetry run python -c "import watermark_framework; print('Package installed successfully')"
+
+  lint-and-typecheck:
+    name: 🔍 Lint & Type Check
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 📦 Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: 🔧 Install dependencies
+      run: make dev-install
+
+    - name: 🎨 Run linting
+      run: make lint
+
+    - name: 🏷️ Run type checking
+      run: make type-check
+
+  tests:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 📦 Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: 🔧 Install dependencies
+      run: make dev-install
+
+    - name: 🧪 Run tests with coverage
+      run: |
+        echo "Running tests with coverage..."
+        poetry run coverage run -m pytest
+
+        echo ""
+        echo "📊 Coverage Summary:"
+        poetry run coverage report --show-missing
+
+        echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+        poetry run coverage report --format=markdown >> $GITHUB_STEP_SUMMARY

@@ -1,22 +1,20 @@
-import logging
-
-logger = logging.getLogger(__name__)
+import bitstruct
 
 
-def convert_add_addi(instr):
+def convert_add_addi(instr: int) -> bytes | None:
     """Конвертирует ADDI rd, rs1, 0 в ADD rd, rs1, x0 и наоборот."""
     is_add, add_data = is_addx0(instr)
-    if is_add:
+    if is_add and add_data is not None:
         return get_addi0(add_data)
 
     is_addi, addi_data = is_addi0(instr)
-    if is_addi:
+    if is_addi and addi_data is not None:
         return get_addx0(addi_data)
 
     return None  # Если инструкция не подходит под условия
 
 
-def is_addx0(instr):
+def is_addx0(instr: int) -> tuple[bool, tuple[int, int] | None]:
     """Проверяет, является ли инструкция
     `add rd, rs1, rs2` с rs1 или rs2 = x0."""
     opcode1 = instr & 0x7F  # opcode1 (7 бит, младшие биты)
@@ -36,7 +34,7 @@ def is_addx0(instr):
     return False, None
 
 
-def is_addi0(instr):
+def is_addi0(instr: int) -> tuple[bool, tuple[int, int] | None]:
     """Проверяет, является ли инструкция `addi rd, rs1, 0`."""
     opcode1 = instr & 0x7F  # opcode1 (7 бит)
     rd = (instr >> 7) & 0x1F  # rd (5 бит)
@@ -51,7 +49,7 @@ def is_addi0(instr):
     return False, None
 
 
-def get_addx0(data):
+def get_addx0(data: tuple[int, int]) -> bytes:
     """Генерирует байтовое представление инструкции ADD rd, rs1, x0."""
     rd, rs1 = data
     opcode1 = 0b0110011
@@ -60,10 +58,11 @@ def get_addx0(data):
     opcode3 = 0b0000000
 
     instr = (opcode3 << 25) | (rs2 << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
+
     return instr.to_bytes(4, byteorder="little")
 
 
-def get_addi0(data):
+def get_addi0(data: tuple[int, int]) -> bytes:
     """Генерирует байтовое представление инструкции ADDI rd, rs1, 0."""
     rd, rs1 = data
     opcode1 = 0b0010011
@@ -71,4 +70,5 @@ def get_addi0(data):
     imm = 0
 
     instr = (imm << 20) | (rs1 << 15) | (opcode2 << 12) | (rd << 7) | opcode1
+
     return instr.to_bytes(4, byteorder="little")
