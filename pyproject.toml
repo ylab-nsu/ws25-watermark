@@ -30,6 +30,7 @@ coverage = "^7.0.0"
 line-length = 120
 target-version = "py311"
 output-format = "grouped"
+exclude = ["tests", "tests/*", "**/tests/**"]
 
 [tool.ruff.lint]
 select = [
