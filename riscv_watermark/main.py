@@ -2,12 +2,13 @@ import argparse
 import logging
 import os
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, cast
 
 from elftools.elf.elffile import ELFFile
 
 from riscv_watermark.decoder import Decoder
 from riscv_watermark.encoder import Encoder
+from riscv_watermark.exceptions import WatermarkError
 from riscv_watermark.watermarkers.factory import fget_watermarker, get_available_methods
 from riscv_watermark.watermarkers.interface import Watermarker
 
@@ -65,7 +66,7 @@ def get_watermarkers(methods_str: Optional[str]) -> List[Watermarker]:
         logger.info(f"Available methods: {', '.join(available_methods)}")
         sys.exit(1)
 
-    return watermarkers
+    return cast(List[Watermarker], watermarkers)
 
 
 def get_available_bits(filename: str, watermarkers: List[Watermarker]) -> Dict[str, int]:
@@ -80,14 +81,10 @@ def get_available_bits(filename: str, watermarkers: List[Watermarker]) -> Dict[s
     :return: Number of bits available for hiding data
     :rtype: int
     """
-    try:
-        encoder = Encoder(filename, watermarkers, "")
-        for watermarker_name, capacity in encoder.capacities.items():
-            logger.info(f"Available bits for {watermarker_name}: {capacity} ({capacity // 8} characters)")
-        return encoder.capacities
-    except Exception as e:
-        logger.error(f"Error calculating available bits: {e}")
-        sys.exit(1)
+    encoder = Encoder(filename, watermarkers, "")
+    for watermarker_name, capacity in encoder.capacities.items():
+        logger.info(f"Available bits for {watermarker_name}: {capacity} ({capacity // 8} characters)")
+    return encoder.capacities
 
 
 def validate_file(filename: str) -> None:
@@ -125,36 +122,27 @@ def encode_message(
     :param output_file: Path to the output file
     :type output_file: Optional[str]
     """
-    try:
-        encoder = Encoder(filename, watermarkers, message)
-        logger.info(f"Available max bit capacity: {encoder.max_capacity} bits")
-        logger.info(f"Message size: {len(message) * 8} bits")
+    encoder = Encoder(filename, watermarkers, message)
+    logger.info(f"Available max bit capacity: {encoder.max_capacity} bits")
+    logger.info(f"Message size: {len(message) * 8} bits")
 
-        new_data = encoder.encode()
-        new_filename = output_file if output_file else f"{filename}.patched"
-        logger.info(f"Creating patched file: {new_filename}")
+    new_data = encoder.encode()
+    new_filename = output_file or f"{filename}.patched"
+    logger.info(f"Creating patched file: {new_filename}")
+    with open(filename, "rb") as source_file:
+        original_data = source_file.read()
+        source_file.seek(0)
+        elf_file = ELFFile(source_file)
+        text_section = elf_file.get_section_by_name(".text")
+        if not text_section:
+            raise RuntimeError("Could not find .text section in ELF file")
 
-        with open(filename, "rb") as source_file:
-            original_data = source_file.read()
-            source_file.seek(0)
-            elf_file = ELFFile(source_file)
-            text_section = elf_file.get_section_by_name(".text")
-            if not text_section:
-                logger.error("Could not find .text section in ELF file")
-                sys.exit(1)
-
-            text_offset = text_section["sh_offset"]
-
-        with open(new_filename, "wb") as target_file:
-            target_file.write(original_data)
-            target_file.seek(text_offset)
-            target_file.write(new_data)
-
-        logger.info(f"Message successfully encoded in {new_filename}")
-
-    except Exception as e:
-        logger.error(f"Encoding failed: {e}")
-        sys.exit(1)
+        text_addr = text_section["sh_addr"]
+    with open(new_filename, "wb") as target_file:
+        target_file.write(original_data)
+        target_file.seek(text_addr)
+        target_file.write(new_data)
+    logger.info(f"Message successfully encoded in {new_filename}")
 
 
 def decode_message(filename: str, watermarkers: List[Watermarker]) -> Dict[str, str]:
@@ -169,23 +157,16 @@ def decode_message(filename: str, watermarkers: List[Watermarker]) -> Dict[str, 
     :return Dictionary of method names and decoded messages
     :rtype Dict[str, str]
     """
-    try:
-        decoder = Decoder(filename, watermarkers)
-        decoded_dict = decoder.decode()
-
-        if len(decoded_dict) == 1:
-            decoded_message = next(iter(decoded_dict.values()))
-            print(f"Decoded message: {decoded_message}")
-        else:
-            for method, message in decoded_dict.items():
-                print(f"Decoded message from {method}: {message}")
-
-        logger.info("Message successfully decoded")
-        return decoded_dict
-
-    except Exception as e:
-        logger.error(f"Decoding failed: {e}")
-        raise RuntimeError(f"Decoding failed: {e}")
+    decoder = Decoder(filename, watermarkers)
+    decoded_dict = decoder.decode()
+    if len(decoded_dict) == 1:
+        decoded_message = next(iter(decoded_dict.values()))
+        print(f"Decoded message: {decoded_message}")
+    else:
+        for method, message in decoded_dict.items():
+            print(f"Decoded message from {method}: {message}")
+    logger.info("Message successfully decoded")
+    return decoded_dict
 
 
 def main() -> None:
@@ -202,17 +183,21 @@ def main() -> None:
 
     watermarkers = get_watermarkers(args.methods)
 
-    if args.get_nbits:
-        get_available_bits(args.filename, watermarkers)
-
-    elif args.encode:
-        encode_message(args.filename, watermarkers, args.encode, args.output)
-
-    elif args.decode:
-        decode_message(args.filename, watermarkers)
-
-    else:
-        logger.error("No operation specified. Use -e, -d, or -g")
+    try:
+        if args.get_nbits:
+            get_available_bits(args.filename, watermarkers)
+        elif args.encode:
+            encode_message(args.filename, watermarkers, args.encode, args.output)
+        elif args.decode:
+            decode_message(args.filename, watermarkers)
+        else:
+            logger.error("No operation specified. Use -e, -d, or -g")
+            sys.exit(1)
+    except WatermarkError as e:
+        logger.error(e)
+        sys.exit(1)
+    except Exception:
+        logger.exception("Unexpected error")
         sys.exit(1)
 
 

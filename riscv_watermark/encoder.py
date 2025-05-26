@@ -1,7 +1,7 @@
 import logging
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
-from riscv_watermark.exceptions import EncodingError, InsufficientCapacityError
+from riscv_watermark.exceptions import WatermarkError
 from riscv_watermark.watermarkers.interface import Watermarker
 
 logger = logging.getLogger(__name__)
@@ -13,9 +13,12 @@ class Encoder:
 
     This class coordinates the watermarking process using one or more watermarking
     methods to encode hidden messages into binary files.
+
+    capacities: Dictionary of watermarking methods and their respective capacities.
+    max_capacity: Maximum capacity of all watermarking methods.
     """
 
-    def __init__(self, src_filename: str, methods: list[Watermarker], message: str):
+    def __init__(self, src_filename: str, methods: List[Watermarker], message: str):
         """
         Initialize the encoder with source file, watermarking methods, and message.
 
@@ -25,17 +28,23 @@ class Encoder:
         :type methods: list[Watermarker]
         :param message: Message to encode
         :type message: str
-        :raises NoMethodsError: If no watermarking methods are provided
+        :raises WatermarkError: If no watermarking methods are provided
         """
         self._src_filename = src_filename
         self._methods = methods
         self._message: str = message
 
         self.capacities: Dict[str, int] = {}
-        for watermarker in self._methods:
-            method_name = watermarker.__class__.__name__
-            bits = watermarker.get_nbits(self._src_filename)
-            self.capacities[method_name] = bits
+
+        for watermarker in self.__methods:
+            name = watermarker.__class__.__name__
+            bits = watermarker.get_nbits(self.__src_filename)
+            if bits <= 0:
+                logger.warning(f"{name}: zero capacity, skipping")
+                continue
+            self.capacities[name] = bits
+        if not self.capacities:
+            raise WatermarkError("No watermarking method available with capacity")
         self.max_capacity = max(self.capacities.values())
 
     def can_encode(self, method_name: Optional[str] = None) -> bool:
@@ -65,50 +74,23 @@ class Encoder:
         result is returned.
 
         :return: Modified binary data containing the encoded message
-        :raises InsufficientCapacityError: If there is not enough capacity to encode
-        :raises EncodingError: If all watermarking methods fail
+        :raises WatermarkError: If there is not enough capacity to encode or all methods fail
         """
-
         if not self.can_encode():
-            msg_bits_needed = len(self._message.encode("utf-8")) * 8
-            raise InsufficientCapacityError(
-                f"Not enough bits available. "
-                f"Need {msg_bits_needed} bits, "
-                f"but only {self.max_capacity} bits are available."
+            bits_needed = len(self.__message.encode("utf-8")) * 8
+            raise WatermarkError(
+                f"Insufficient capacity: {self.max_capacity} bits available, but {bits_needed} needed"
             )
 
-        new_data = b""
-
-        for watermarker in self._methods:
+        for wm in self.__methods:
+            name = wm.__class__.__name__
             try:
-                bits_capacity = watermarker.get_nbits(self._src_filename)
+                data = wm.encode(self.__src_filename, self.__message)
+                logger.info(f"Encoded with {name}")
+                return data
+            except WatermarkError as e:
+                logger.warning(f"{name} failed: {e}")
+            except Exception:
+                logger.exception(f"Unexpected error in {name}")
 
-                message = self._message
-                msg_len = len(message)
-
-                if bits_capacity * 8 < 1:
-                    logger.warning(
-                        f"Skipping {watermarker.__class__.__name__}: "
-                        f"Low amount of encodable bits: {bits_capacity}"
-                    )
-                    continue
-
-                if bits_capacity < msg_len * 8:
-                    logger.warning(
-                        f"Message too large for watermarker: {msg_len} bytes needed, "
-                        f"but only {bits_capacity * 8} bytes available"
-                    )
-                    continue
-                else:
-                    message += " " * (bits_capacity * 8 - msg_len)
-
-                new_data = watermarker.encode(self._src_filename, message)
-
-                if new_data:
-                    logger.info(f"Successfully encoded message using {watermarker.__class__.__name__}")
-                    return new_data
-            except Exception as e:
-                logger.warning(f"{watermarker.__class__.__name__} method failed: {str(e)}")
-
-        logger.error("All watermarking methods failed")
-        raise EncodingError("Failed to encode message with any available watermarking method")
+        raise WatermarkError("Failed to encode with any watermarking method")
