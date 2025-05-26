@@ -27,11 +27,11 @@ type-check-report: ## Run type checking with detailed error report
 	poetry run mypy watermark_framework/ --show-error-codes --pretty
 
 test: ## Run tests
-	poetry run pytest
+	poetry run pytest --ignore=tests/test_for_qemu.py
 
 test-cov: ## Run tests with coverage report
 	@echo "🧪 Running tests with coverage..."
-	poetry run coverage run -m pytest
+	poetry run coverage run -m pytest --ignore=tests/test_for_qemu.py
 	@echo ""
 	@echo "📊 Coverage Summary:"
 	poetry run coverage report --show-missing

@@ -189,3 +189,5 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
+.DS_Store
+example_bins/.DS_Store
