@@ -177,6 +177,10 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
+# Watermarked binaries
+*.patched
+*.elf.patched
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
