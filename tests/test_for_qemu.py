@@ -1,21 +1,25 @@
 import logging
 import os
 import subprocess
+from pathlib import Path
 
 import pytest
 
-from riscv_watermark.main import encode_message
-from riscv_watermark.watermarkers.factory import fget_watermarker
+from watermark_framework.core.service import WatermarkService
+from watermark_framework.watermarkers import fget_watermarker
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+PROJECT_ROOT = Path(__file__).parent.parent
+EXAMPLE_BINS_DIR = PROJECT_ROOT / "example_bins"
 
 TEST_PROGRAMS = {
     "echo.elf": {"args": ["Hello, World!"], "expected_output": "Hello, World!"},
     "cat.elf": {"args": ["test.txt"], "expected_output": "test content"},
 }
 
-SECRET_MESSAGE = "This file has been signed with ws25-watermark"
+SECRET_MESSAGE = "This file has been signed with watermark-framework"
 
 
 def run_qemu_test(program_path, args):
@@ -23,14 +27,14 @@ def run_qemu_test(program_path, args):
     Runs a program in QEMU and returns its output.
 
     :param program_path: Path to the executable file
-    :type program_path: str
+    :type program_path: Path
     :param args: List of command line arguments
     :type args: List[str]
     :return: Program output
     :rtype: str
     :raises: pytest.fail if program exits with error
     """
-
+    program_path = str(program_path)
     current_mode = os.stat(program_path).st_mode
     if not current_mode & 0o111:
         os.chmod(program_path, current_mode | 0o111)
@@ -63,31 +67,32 @@ def test_program_functionality(program_name):
     :raises: pytest.skip if program not found
     :raises: AssertionError if functionality is broken
     """
-    original_program = os.path.join("example_bins", program_name)
-    watermarked_program = os.path.join("example_bins", f"{os.path.splitext(program_name)[0]}.watermarked.elf")
+    original_program = EXAMPLE_BINS_DIR / program_name
+    watermarked_program = EXAMPLE_BINS_DIR / f"{Path(program_name).stem}.watermarked.elf"
 
-    if not os.path.exists(original_program):
+    if not original_program.exists():
         pytest.skip(f"Test program {program_name} not found")
 
     test_data = TEST_PROGRAMS[program_name]
 
     if program_name == "cat.elf":
-        with open("test.txt", "w") as f:
-            f.write("test content")
+        test_file = PROJECT_ROOT / "test.txt"
+        test_file.write_text("test content")
 
     try:
         watermarker = fget_watermarker("equal_funcs")
+        service = WatermarkService(str(original_program), watermarker)
 
-        available_bits = watermarker.get_nbits(original_program)
+        available_bits = service.get_capacity()
         max_chars = available_bits // 8
 
         truncated_message = SECRET_MESSAGE[:max_chars]
         logger.info(f"Available capacity: {available_bits} bits ({max_chars} chars)")
         logger.info(f"Message to encode: '{truncated_message}' (Length: {len(truncated_message)})")
 
-        encode_message(original_program, [watermarker], truncated_message, watermarked_program)
+        service.encode(truncated_message.encode(), dst=str(watermarked_program))
 
-        assert os.path.exists(watermarked_program), "Watermarked file was not created"
+        assert watermarked_program.exists(), "Watermarked file was not created"
 
         output = run_qemu_test(watermarked_program, test_data["args"])
 
@@ -102,7 +107,7 @@ def test_program_functionality(program_name):
             )
 
     finally:
-        if os.path.exists(watermarked_program):
-            os.remove(watermarked_program)
-        if program_name == "cat.elf" and os.path.exists("test.txt"):
-            os.remove("test.txt")
+        if watermarked_program.exists():
+            watermarked_program.unlink()
+        if program_name == "cat.elf" and (PROJECT_ROOT / "test.txt").exists():
+            (PROJECT_ROOT / "test.txt").unlink()
