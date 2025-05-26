@@ -1,126 +1,37 @@
-# Test Coverage Documentation
+# Testing Strategy
 
-This document describes the test coverage for the main components of the watermarking framework.
+## Overview
 
-## CLI Tests (`test_cli.py`)
+Our testing approach focuses on **isolated unit tests** with **minimal dependencies** and **comprehensive coverage** of core functionality.
 
-Tests the command-line interface functionality:
+## Test Structure
 
-- **List Strategies**
-  - Verifies the `--list` command outputs available watermarking strategies
-  - Ensures "EQ_INSTR" strategy is listed
+### Unit Tests
 
-- **Binary File Handling**
-  - Tests error handling for missing binary file
-  - Tests error handling for non-existent binary file
-  - Validates proper error messages
+- **[`test_watermarkers_init.py`](../tests/test_watermarkers_init.py)** - Strategy registration and discovery
+- **[`test_service.py`](../tests/test_service.py)** - Core WatermarkService functionality  
+- **[`test_section_handler.py`](../tests/test_section_handler.py)** - ELF parsing and section management
 
-- **Strategy Validation**
-  - Tests error handling for invalid strategy names
-  - Verifies proper error messages for unknown strategies
+### Integration Tests
 
-- **Encoding/Decoding Flow**
-  - Tests complete encoding cycle with message
-  - Verifies successful file creation
-  - Tests decoding of encoded message
-  - Validates message integrity
+- **[`test_cli.py`](../tests/test_cli.py)** - End-to-end CLI workflows
+- **[`test_for_qemu.py`](../tests/test_for_qemu.py)** - Real binary execution validation
 
-- **Capacity Check**
-  - Tests the capacity check command
-  - Verifies proper output format with bits information
+## Running Tests
 
-- **Operation Validation**
-  - Tests error handling when no operation is specified
-  - Validates proper error messages
+```bash
+make test          # Run all tests
+make test-cov      # Run with coverage report
+```
 
-## Service Tests (`test_service.py`)
+## Coverage & CI
 
-Tests the core WatermarkService functionality:
+- **Coverage tracking** with `pytest-cov` and detailed reporting
+- **Automated testing** in CI/CD pipeline with coverage validation
+- **Coverage reports** generated for all commits and pull requests
 
-- **Service Initialization**
-  - Tests initialization with and without strategy
-  - Validates section and strategy attributes
+## Dependencies
 
-- **Strategy Management**
-  - Tests strategy validation
-  - Tests setting valid and invalid strategies
-  - Verifies architecture compatibility checks
-
-- **File Management**
-  - Tests switching between files
-  - Validates error handling for invalid files
-  - Tests file path validation
-
-- **Capacity Calculation**
-  - Tests capacity calculation with and without strategy
-  - Validates capacity calculation with explicit strategy
-
-- **Encoding/Decoding Operations**
-  - Tests message encoding
-  - Tests message decoding
-  - Validates message integrity
-  - Tests handling of oversized messages
-
-## Watermarker Initialization Tests (`test_watermarkers_init.py`)
-
-Tests the watermarker initialization and management:
-
-- **Strategy Listing**
-  - Tests retrieval of available strategies
-  - Verifies strategy list format and content
-  - Ensures "EQ_INSTR" is available
-
-- **Strategy Retrieval**
-  - Tests getting strategy by name
-  - Validates correct strategy class is returned
-  - Tests error handling for non-existent strategies
-
-- **Watermarker Dictionary**
-  - Tests retrieval of watermarker dictionary
-  - Verifies dictionary structure and content
-  - Validates strategy class mappings
-
-- **Duplicate Detection**
-  - Tests detection of duplicate METHOD_NAME
-  - Validates error handling for duplicate implementations
-  - Ensures proper error messages
-
-## QEMU Testing (`test_for_qemu.py`)
-
-Tests the functionality of watermarked binaries using QEMU emulator:
-
-- **Test Environment Setup**
-  - Uses QEMU RISC-V 64-bit emulator
-  - Requires RISC-V GNU/Linux toolchain
-  - Sets up proper environment variables for QEMU
-
-- **Test Programs**
-  - Tests basic programs like `echo` and `cat`
-  - Verifies program functionality after watermarking
-  - Checks program output matches expected results
-
-- **Test Flow**
-  1. Loads original RISC-V binary
-  2. Applies watermarking with test message
-  3. Runs watermarked binary in QEMU
-  4. Verifies program output and functionality
-  5. Cleans up temporary files
-
-- **Test Cases**
-  - `echo.elf`: Tests basic string output
-  - `cat.elf`: Tests file reading functionality
-  - Each test verifies:
-    - Program executes successfully
-    - Output matches expected results
-    - Watermark doesn't affect functionality
-
-## Test Dependencies
-
-- Tests require example binaries in the `example_bins` directory
-- Some tests are skipped if required binaries are not found
-- Tests use temporary directories for output files
-- Tests verify both successful operations and error conditions
-- QEMU tests require:
-  - QEMU RISC-V 64-bit emulator
-  - RISC-V GNU/Linux toolchain
-  - Proper environment setup for QEMU 
+- Example binaries in `example_bins/` (tests skip if missing)
+- QEMU RISC-V for execution tests (optional)
+- All tests use temporary directories for outputs
