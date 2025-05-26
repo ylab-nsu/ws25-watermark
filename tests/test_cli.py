@@ -5,7 +5,7 @@ import subprocess
 import pytest
 
 from watermark_framework import WatermarkService
-from watermark_framework.watermarkers import get_strategy
+from watermark_framework.watermarkers import get_available_strategies, get_strategy
 
 PROJECT_ROOT = Path(__file__).parent.parent
 EXAMPLE_BINS_DIR = PROJECT_ROOT / "example_bins"
@@ -29,7 +29,10 @@ def test_list_strategies():
     returncode, stdout, stderr = run_cli_command(["--list"])
     assert returncode == 0
     assert "Available watermarking strategies:" in stdout
-    assert "EQ_INSTR" in stdout
+    
+    strategies = get_available_strategies()
+    for strategy in strategies:
+        assert strategy in stdout
 
 def test_missing_binary():
     """Test handling of missing binary file."""
