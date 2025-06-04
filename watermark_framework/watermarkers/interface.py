@@ -7,6 +7,7 @@ from watermark_framework.io import TextSection
 class Watermarker(ABC):
     METHOD_NAME: str
     SUPPORTED_ARCHS: set[Architecture]
+    REQUIRES_DETAILED: bool = False
 
     @abstractmethod
     def get_nbits(self, section: TextSection) -> int:
