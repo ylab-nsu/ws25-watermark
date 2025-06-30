@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from keystone import Ks
 from capstone import Cs, CsInsn
 from elftools.elf.elffile import ELFFile
 
@@ -20,6 +21,7 @@ class TextSection:
         arch (Architecture): Architecture (e.g., X86_64, RISCV).
         src_path (str): Path to source ELF file.
         detailed (bool): Whether instructions include detailed analysis info.
+        ks (Ks | None): Keystone assembler instance for this architecture, if needed.
     """
 
     data: bytes
@@ -30,6 +32,7 @@ class TextSection:
     arch: Architecture
     src_path: str
     detailed: bool = False
+    ks: Ks | None = None
 
 
 class TextSectionHandler:
@@ -71,16 +74,18 @@ class TextSectionHandler:
                 capstone.detail = True
 
             insns = list(capstone.disasm(code, addr))
+            keystone = Ks(arch.ks_arch, arch.ks_mode) if arch.ks_arch and arch.ks_mode else None
 
             return TextSection(
-                data=code, 
-                insns=insns, 
-                vma=addr, 
-                offset=offset, 
-                size=size, 
-                arch=arch, 
+                data=code,
+                insns=insns,
+                vma=addr,
+                offset=offset,
+                size=size,
+                arch=arch,
                 src_path=path,
-                detailed=detailed
+                detailed=detailed,
+                ks=keystone,
             )
 
     @staticmethod

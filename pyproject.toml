@@ -17,6 +17,7 @@ watermark = "watermark_framework.cli.main:main"
 python = "^3.11"
 pyelftools = "^0.31"
 capstone = "^5.0.5"
+keystone-engine = "^0.9.2"
 bitstruct = "^8.20.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -48,6 +49,7 @@ ignore = [
     "E501", # line too long (handled by formatter)
     "B008", # do not perform function calls in argument defaults
     "F401",
+    "I001",
 ]
 
 [tool.ruff.format]
