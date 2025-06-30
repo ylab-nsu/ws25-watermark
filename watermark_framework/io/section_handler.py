@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from keystone import Ks
 from capstone import Cs, CsInsn
 from elftools.elf.elffile import ELFFile
 
@@ -19,6 +20,8 @@ class TextSection:
         size (int): Section size (sh_size).
         arch (Architecture): Architecture (e.g., X86_64, RISCV).
         src_path (str): Path to source ELF file.
+        detailed (bool): Whether instructions include detailed analysis info.
+        ks (Ks | None): Keystone assembler instance for this architecture, if needed.
     """
 
     data: bytes
@@ -28,11 +31,13 @@ class TextSection:
     size: int
     arch: Architecture
     src_path: str
+    detailed: bool = False
+    ks: Ks | None = None
 
 
 class TextSectionHandler:
     @staticmethod
-    def load(path: str) -> TextSection:
+    def load(path: str, detailed: bool = False) -> TextSection:
         """
         Loads and parses the .text section of an ELF file.
 
@@ -41,6 +46,7 @@ class TextSectionHandler:
 
         Args:
             path: Path to the ELF file to load.
+            detailed: Whether to enable Capstone's detailed mode.
 
         Returns:
             TextSection: An object containing the .text section's data, disassembled
@@ -64,9 +70,23 @@ class TextSectionHandler:
             size = text_section.header["sh_size"]
 
             capstone = Cs(arch.capstone_arch, arch.capstone_mode)
-            insns = list(capstone.disasm(code, addr))
+            if detailed:
+                capstone.detail = True
 
-            return TextSection(data=code, insns=insns, vma=addr, offset=offset, size=size, arch=arch, src_path=path)
+            insns = list(capstone.disasm(code, addr))
+            keystone = Ks(arch.ks_arch, arch.ks_mode) if arch.ks_arch and arch.ks_mode else None
+
+            return TextSection(
+                data=code,
+                insns=insns,
+                vma=addr,
+                offset=offset,
+                size=size,
+                arch=arch,
+                src_path=path,
+                detailed=detailed,
+                ks=keystone,
+            )
 
     @staticmethod
     def write(section: TextSection, dst: str, new_data: bytes) -> None:

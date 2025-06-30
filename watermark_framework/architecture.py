@@ -11,6 +11,12 @@ from capstone import (
     CS_MODE_RISCVC,
 )
 
+from keystone import (
+    KS_ARCH_X86,
+    KS_ARCH_ARM64,
+    KS_MODE_64,
+)
+
 
 class Architecture(Enum):
     """
@@ -24,16 +30,27 @@ class Architecture(Enum):
     - elf_class: ELF class (32 or 64, or None for flexible architectures).
     """
 
-    X86_64 = ("X86_64", CS_ARCH_X86, CS_MODE_64, "EM_X86_64", 64)
-    RISCV = ("riscv", CS_ARCH_RISCV, CS_MODE_RISCV32 | CS_MODE_RISCV64 | CS_MODE_RISCVC, "EM_RISCV", None)
-    ARM64 = ("arm64", CS_ARCH_ARM64, CS_MODE_ARM, "EM_AARCH64", 64)
+    X86_64 = ("X86_64", CS_ARCH_X86, CS_MODE_64, "EM_X86_64", 64, KS_ARCH_X86, KS_MODE_64)
+    RISCV = ("riscv", CS_ARCH_RISCV, CS_MODE_RISCV32 | CS_MODE_RISCV64 | CS_MODE_RISCVC, "EM_RISCV", None, None, None)
+    ARM64 = ("arm64", CS_ARCH_ARM64, CS_MODE_ARM, "EM_AARCH64", 64, KS_ARCH_ARM64, KS_MODE_64)
 
-    def __init__(self, arch_name: str, capstone_arch: int, capstone_mode: int, e_machine: str, elf_class: int | None):
+    def __init__(
+        self,
+        arch_name: str,
+        capstone_arch: int,
+        capstone_mode: int,
+        e_machine: str,
+        elf_class: int | None,
+        ks_arch: int | None,
+        ks_mode: int | None,
+    ):
         self.arch_name = arch_name
         self.capstone_arch = capstone_arch
         self.capstone_mode = capstone_mode
         self.e_machine = e_machine
         self.elf_class = elf_class
+        self.ks_arch = ks_arch
+        self.ks_mode = ks_mode
 
     @classmethod
     def from_elf(cls, e_machine: str, elf_class: int) -> "Architecture":

@@ -28,7 +28,8 @@ class WatermarkService:
             ValueError: If the .text section is missing, the architecture is unsupported,
                 or the strategy does not support the file's architecture.
         """
-        self._section: TextSection = TextSectionHandler.load(path)
+        detailed = strategy.REQUIRES_DETAILED if strategy else False
+        self._section: TextSection = TextSectionHandler.load(path, detailed=detailed)
         self._strategy: Watermarker | None = None
         if strategy:
             self.set_strategy(strategy)
@@ -54,11 +55,20 @@ class WatermarkService:
             raise ValueError("No strategy provided or set as default")
         return self._strategy
 
+    def _ensure_detailed_mode(self, strategy: Watermarker) -> None:
+        """
+        Ensures the current TextSection has detailed mode if the strategy requires it.
+        Reloads the section if necessary.
+        """
+        if strategy.REQUIRES_DETAILED and not self._section.detailed:
+            self._section = TextSectionHandler.load(self._section.src_path, detailed=True)
+
     def set_strategy(self, strategy: Watermarker) -> None:
         """
         Sets the default watermarking strategy for the service.
         """
         self._validate_strategy(strategy)
+        self._ensure_detailed_mode(strategy)
         self._strategy = strategy
 
     def set_file(self, path: str) -> None:
@@ -70,7 +80,8 @@ class WatermarkService:
         Args:
             path: Path to the new ELF file to load.
         """
-        new_section = TextSectionHandler.load(path)
+        detailed = self._strategy.REQUIRES_DETAILED if self._strategy else False
+        new_section = TextSectionHandler.load(path, detailed=detailed)
         if self._strategy and new_section.arch not in self._strategy.SUPPORTED_ARCHS:
             raise ValueError(
                 f"Current strategy {self._strategy.METHOD_NAME} does not support architecture {new_section.arch}"
@@ -91,6 +102,8 @@ class WatermarkService:
             int: The number of bits that can be encoded.
         """
         selected_strategy = self._get_valid_strategy(strategy)
+        if strategy:
+            self._ensure_detailed_mode(strategy)
         return selected_strategy.get_nbits(self._section)
 
     def encode(self, message: bytes, strategy: Watermarker | None = None, dst: str | None = None) -> str:
@@ -110,6 +123,8 @@ class WatermarkService:
             str: The path to the modified ELF file.
         """
         selected_strategy = self._get_valid_strategy(strategy)
+        if strategy:
+            self._ensure_detailed_mode(strategy)
 
         message_bits = len(message) * 8
         capacity = selected_strategy.get_nbits(self._section)
@@ -136,4 +151,6 @@ class WatermarkService:
             bytes: The decoded watermark message.
         """
         selected_strategy = self._get_valid_strategy(strategy)
+        if strategy:
+            self._ensure_detailed_mode(strategy)
         return selected_strategy.decode(self._section)
