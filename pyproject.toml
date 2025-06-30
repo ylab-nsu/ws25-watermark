@@ -72,7 +72,7 @@ disallow_untyped_decorators = true
 
 # Ignore missing library stubs for external dependencies
 [[tool.mypy.overrides]]
-module = ["capstone", "capstone.*", "bitstruct"]
+module = ["capstone", "capstone.*", "bitstruct", "keystone"]
 ignore_missing_imports = true
 
 [tool.coverage.run]
