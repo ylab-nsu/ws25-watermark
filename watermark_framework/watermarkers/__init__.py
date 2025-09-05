@@ -2,6 +2,7 @@ from watermark_framework.watermarkers.interface import Watermarker
 
 #### Export watermarkers for importability:
 from .eq_instr.module import EquivalentInstructionWatermarker
+from .eq_instr_x86.module import EquivalentInstructionWatermarkerX86
 
 ####
 
