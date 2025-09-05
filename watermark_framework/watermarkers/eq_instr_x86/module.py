@@ -92,23 +92,24 @@ class EquivalentInstructionWatermarkerX86(Watermarker):
         all_insns = section.insns
 
         for i, insn in enumerate(all_insns):
-            if bit_idx >= len(bitstr): break
-
             best_action = None
             for group in self._enriched_groups:
                 if group["is_candidate"](insn):
                     width = group["bit_width"]
-                    if width == 0 or bit_idx + width > len(bitstr):
-                        continue
+                    if bit_idx >= len(bitstr):
+                        target_bits = '0' * width
+                    else:
+                        if bit_idx + width > len(bitstr):
+                            continue
+                        desired_bits = bitstr[bit_idx : bit_idx + width]
+                        if not any(m["bit"] == desired_bits for m in group["representatives"]):
+                            continue
+                        target_bits = desired_bits
 
-                    desired_bits = bitstr[bit_idx : bit_idx + width]
-                    if not any(m["bit"] == desired_bits for m in group["representatives"]):
-                        continue
-
-                    if self._analyze_safety(insn, group, desired_bits, all_insns, i):
+                    if self._analyze_safety(insn, group, target_bits, all_insns, i):
                         best_action = {
                             "group": group,
-                            "target_bits": desired_bits,
+                            "target_bits": target_bits,
                             "width": width,
                         }
                         break
@@ -129,7 +130,8 @@ class EquivalentInstructionWatermarkerX86(Watermarker):
                     except Exception:
                         return bytes(new_data)
 
-                bit_idx += best_action["width"]
+                if bit_idx < len(bitstr):
+                    bit_idx += best_action["width"]
 
         return bytes(new_data)
 

@@ -50,7 +50,7 @@ EQUIVALENCE_GROUPS = [
             {"bit": "1", "asm": "xor rax, rax"}
         ]
     },
-        {
+    {
         "name": "POSITIVE_ARITHMETIC",
         "is_candidate": lambda insn: (
             len(insn.operands) == 2 and insn.operands[1].type == X86_OP_IMM and
@@ -100,6 +100,23 @@ EQUIVALENCE_GROUPS = [
         "representatives": [
             {"bit": "0", "asm": "dec rax"},
             {"bit": "1", "asm": "sub rax, 1"}
+        ]
+    },
+    {
+        "name": "TEST_VS_AND_SELF",
+        "is_candidate": lambda insn: (
+            insn.mnemonic in ("test", "and") and
+            len(insn.operands) == 2 and
+            insn.operands[0].type == X86_OP_REG and
+            insn.operands[0].reg == insn.operands[1].reg
+        ),
+        "get_bit": lambda insn: "0" if insn.mnemonic == "test" else "1",
+        "get_asm_for_bit": lambda insn, bit: (
+            f"{'test' if bit == '0' else 'and'} {insn.op_str}"
+        ),
+        "representatives": [
+            {"bit": "0", "asm": "test rax, rax"},
+            {"bit": "1", "asm": "and rax, rax"}
         ]
     },
 ]
